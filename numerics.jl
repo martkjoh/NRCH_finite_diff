@@ -5,40 +5,23 @@ import KernelAbstractions.Extras.LoopInfo: @unroll
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 1_000
+const frames = 10_000
 const skip = div(M, frames)
-const rng = MersenneTwister(1234)
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')
 print("dT   = ", dt, '\n')
-param_names = ["u, -r", "a", "D", "phi", "N", "L", "dt"]
-
-
-# Finite difference coeficcients, https://en.wikipedia.org/wiki/Finite_difference_coefficient
-# const co = [1/2] / dx
-# const co = [2/3, -1/12] / dx
-# const co = [3/4, -3/20, 1/60] / dx
-const co = [ 4/5, -1/5, 4/105, -1/280 ] / dx
-
-const order = length(co)
+param_names = ["u, -r", "a", "D", "phi", "N", "L", "T", "dt"]
 
 @inline ind(i) = mod(i-1, N)+1
 
-@inline function ∇(A, i)
-	d = 0.
-	@inbounds @unroll for j in 1:order
-		d += co[j]*( A[ind(i+j)] - A[ind(i-j)] ) 
-	end
-	return d
-end
+# Finite difference coeficcients: https://en.wikipedia.org/wiki/Finite_difference_coefficient
 
-@inline function ∇²(A, i)
-	d = 0.
-	@inbounds @unroll for j in 1:order
-		d += co[j]*( ∇(A, i+j) - ∇(A, i-j)  ) 
-	end
-	return d
-end
+# @inline ∇(A, i) = (A[ind(i+1)] - A[ind(i-1)]) / (2*dx)
+# @inline ∇²(A, i) = (A[ind(i+1)] + A[ind(i-1)] - 2*A[i]) / dx^2
+
+@inline ∇(A, i)  = ( 8*(A[ind(i + 1)] - A[ind(i - 1)]) - (A[ind(i + 2)] - A[ind(i - 2)]) ) / (12*dx)
+@inline ∇²(A, i) = (-5/2*A[i] + 4/3*(A[ind(i+1)] + A[ind(i-1)]) - 1/12*(A[ind(i+2)] + A[ind(i-2)])) / dx^2
+
 
 function euler!(φ, μ, δφ, ξ, param_r)
     u, α, σ = param_r
@@ -47,7 +30,7 @@ function euler!(φ, μ, δφ, ξ, param_r)
         @views μ[i, 1] = ruφ² * φ[i, 1] - ∇²(φ[:, 1], i) + α * φ[i, 2]
         @views μ[i, 2] = ruφ² * φ[i, 2] - ∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
-    randn!(rng, ξ)
+    randn!(ξ)
     ξ .*= σ
     @inbounds for i in 1:N
         @views δφ[i, 1] = ( ∇²(μ[:, 1], i) - ∇(ξ[:, 1], i) ) * dt
@@ -72,7 +55,8 @@ function run_euler(param)
     σ = sqrt(2 * D / dt / dx)
 
     x = LinRange(0, L-dx, N)
-    φ = .1 * [sin.(2*pi*x/L) cos.(2*pi*x/L)]
+    # φ = .4 * [sin.(2*pi*x/L) cos.(2*pi*x/L)]
+    φ = zeros(N, 2)
 
     param_r = (u, α, σ)
 
@@ -86,7 +70,7 @@ function run_euler(param)
 
     loop!(φt, φ, μ, δφ, ξ, param_r)
 
-    param_write = (u, α, D, bφ, N, L, dt)
+    param_write = (u, α, D, bφ, N, L, M*dt, dt)
     
     write_file(φt, param_write)
 end

@@ -49,10 +49,9 @@ def add_phase(ax, phibar, alpha):
     ax.set_xlim(-1, .1)
 
 
-def plot_error(phit, param):
-    u, a, b, phibar, N, L, dt = param
+def plot_error(ax, phit, param):
+    u, a, b, phibar, N, L, T, dt = param
     dx = L / N
-    fig, ax = plt.subplots()
     pt = np.einsum('txi->ti', phit) * dx / L
     dpt = (pt[1:] - pt[:-1])/dt
     frames = len(phit)
@@ -63,13 +62,13 @@ def plot_error(phit, param):
 
 
 def plot_sol2(ax, param):
-    u, a, b, phibar, N, L, dt = param
+    u, a, b, phibar, N, L, T, dt = param
     tt = np.linspace(0, L, 1000)
     ax.plot(tt, (1 + phibar)*np.cos(2*tt/L*2*np.pi) + phibar,":r",label="$A\\cos2\\phi + c$")
     ax.plot(tt, 2*np.sqrt(-phibar-phibar**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
 
 def plot_sol1(ax, param):
-    u, a, b, phibar, N, L, dt = param
+    u, a, b, phibar, N, L, T, dt = param
     A = np.sqrt((u - (2 * np.pi / L * 2)**2)/u)
     ax.plot([0, L], [A, A], 'g--', label="$\\sqrt{(-r - (4\\pi/L)^2)/u}$")
     A = np.sqrt((u - (2 * np.pi / L )**2)/u)
@@ -80,22 +79,24 @@ def make_anim(folder, filename):
     filename = filename[:-4]
 
     phit, param = load_file(folder, filename)
-    u, a, b, phibar, N, L, dt = param
+    u, a, b, phibar, N, L, T, dt = param
     L = 10
     dx = L / N
     x = np.linspace(0, L, N)
     D2 = lambda J : ( np.roll(J, 1, axis=-1) + np.roll(J, -1, axis=-1) - 2 * J ) / (dx)**2 
     D = lambda J : (np.roll(J, 1, axis=-1) - np.roll(J, -1, axis=-1) ) / (2 * dx)
-    plot_error(phit, param)
 
     fig = plt.figure(layout="constrained", figsize=(18, 12))
-    gs = GridSpec(2, 2, figure=fig)
-    ax1 = fig.add_subplot(gs[0, 0]) 
-    ax2 = fig.add_subplot(gs[:, 1])
+    gs = GridSpec(3, 2, figure=fig)
+    ax1 = fig.add_subplot(gs[0, :]) 
+    ax2 = fig.add_subplot(gs[1:, 1])
     ax3 = fig.add_subplot(gs[1, 0])
+    ax4 = fig.add_subplot(gs[2, 0])
 
     ax = [ax1, ax2, ax3]
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
+
+    plot_error(ax4, phit, param)
 
     # plot_sol1(ax[0], param)
     # plot_sol2(ax[0], param)
@@ -143,19 +144,28 @@ def make_anim(folder, filename):
  
 
     anim = animation.FuncAnimation(fig, animate,  interval=50, frames=frames//n, repeat=True, fargs=[F0,])
-    # plt.tight_layout()
     plt.show()
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
 
-folder = "data/sym/"
-folder_vid = "vid/"
+name = "sym_short"
+name = "sym_long"
+name = "sym_long_cold"
+folder = "data/" + name + "/"
+folder_vid = "vid/" + name + "/"
+
+import os, shutil
+from multiprocessing import Pool
+if os.path.isdir(folder_vid):
+    shutil.rmtree(folder_vid)
+os.mkdir(folder_vid)
 
 fnames = get_all_filenames_in_folder(folder)
 
 [make_anim(folder, fname) for fname in fnames]
 
 
-# from multiprocessing import Pool
-# with Pool(4) as pool:
- #     pool.map(make_anim, fnames)
+# folder_fname = [(folder, name) for name in fnames]
+# with Pool(10) as pool:
+#     pool.starmap(make_anim, folder_fname)
+
