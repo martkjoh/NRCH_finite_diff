@@ -5,7 +5,7 @@ import KernelAbstractions.Extras.LoopInfo: @unroll
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 10_000
+const frames = 1_000
 const skip = div(M, frames)
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')
@@ -16,19 +16,17 @@ param_names = ["u, -r", "a", "D", "phi", "N", "L", "T", "dt"]
 
 # Finite difference coeficcients: https://en.wikipedia.org/wiki/Finite_difference_coefficient
 
-# @inline ∇(A, i) = (A[ind(i+1)] - A[ind(i-1)]) / (2*dx)
-# @inline ∇²(A, i) = (A[ind(i+1)] + A[ind(i-1)] - 2*A[i]) / dx^2
-
 @inline ∇(A, i)  = ( 8*(A[ind(i + 1)] - A[ind(i - 1)]) - (A[ind(i + 2)] - A[ind(i - 2)]) ) / (12*dx)
-@inline ∇²(A, i) = (-5/2*A[i] + 4/3*(A[ind(i+1)] + A[ind(i-1)]) - 1/12*(A[ind(i+2)] + A[ind(i-2)])) / dx^2
+@inline ∇²(A, i)  = ( 8*( ∇(A,i + 1) - ∇(A,i - 1)) - (∇(A,i + 2) - ∇(A,i - 1)) ) / (12*dx)
+@inline t∇²(A, i) = (-5/2*A[i] + 4/3*(A[ind(i+1)] + A[ind(i-1)]) - 1/12*(A[ind(i+2)] + A[ind(i-2)])) / dx^2
 
 
 function euler!(φ, μ, δφ, ξ, param_r)
     u, α, σ = param_r
     @inbounds for i in 1:N
         @views ruφ² = u * (-1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
-        @views μ[i, 1] = ruφ² * φ[i, 1] - ∇²(φ[:, 1], i) + α * φ[i, 2]
-        @views μ[i, 2] = ruφ² * φ[i, 2] - ∇²(φ[:, 2], i) - α * φ[i, 1]
+        @views μ[i, 1] = ruφ² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
+        @views μ[i, 2] = ruφ² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
     randn!(ξ)
     ξ .*= σ
@@ -55,7 +53,6 @@ function run_euler(param)
     σ = sqrt(2 * D / dt / dx)
 
     x = LinRange(0, L-dx, N)
-    # φ = .4 * [sin.(2*pi*x/L) cos.(2*pi*x/L)]
     φ = zeros(N, 2)
 
     param_r = (u, α, σ)

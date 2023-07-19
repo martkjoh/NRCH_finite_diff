@@ -14,8 +14,8 @@ include("numerics.jl")
 
 
 u = 10.
-D = 1e-7
-bφ = -.70
-α = 3.
+D = 1e-5
+bφ = -.7
+α = 4.5
 param = (u, α, D, bφ)
 @time run_euler(param);

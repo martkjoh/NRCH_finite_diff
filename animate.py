@@ -148,9 +148,17 @@ def make_anim(folder, filename):
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
 
-name = "sym_short"
-name = "sym_long"
-name = "sym_long_cold"
+# name = "sym_short"
+# name = "sym_long"
+# name = "sym_long_cold"
+
+name = "sym_no_t"
+name = "sym_only_t"
+name = "sym_t_f"
+
+
+name = "sym"
+
 folder = "data/" + name + "/"
 folder_vid = "vid/" + name + "/"
 
