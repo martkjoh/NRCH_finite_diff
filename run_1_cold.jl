@@ -2,11 +2,11 @@
 const M = 200_000_000
 const N = 500
 const L = N/5.
-const c = .01
+const c = .01 # dt/dx^4 = c
 # P rint progress bar
 pr = true
 # Folder for data
-write_folder = "data/sym_long_cold/"
+write_folder = "data/long_cold/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 

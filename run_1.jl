@@ -2,11 +2,11 @@
 const M = 200_000_000
 const N = 500
 const L = N/5.
-const c = .01
+const c = .01 # dt/dx^4 = c
 # P rint progress bar
 pr = true
 # Folder for data
-write_folder = "data/sym_long/"
+write_folder = "data/long/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 
@@ -15,7 +15,7 @@ include("numerics.jl")
 
 using Base.Threads
 u = 10.
-D = 1e-7
+D = 1e-5
 
 αs = LinRange(0, 6, 4)
 φs = [-.8, -0.7, -.6, -.5, -.2]

@@ -1,11 +1,10 @@
 using DelimitedFiles
 using BenchmarkTools
 using Random
-import KernelAbstractions.Extras.LoopInfo: @unroll
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 1_000
+const frames = 10_000
 const skip = div(M, frames)
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')

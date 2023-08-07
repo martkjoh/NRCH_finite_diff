@@ -128,7 +128,7 @@ def make_anim(folder, filename):
     F0[0] = np.sum(F) *dx
     frames = len(phit)
 
-    n = 10
+    n = 100
     def animate(m, F0):
         m = m*n
         n2 = frames//10
@@ -148,16 +148,12 @@ def make_anim(folder, filename):
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
 
-# name = "sym_short"
-# name = "sym_long"
-# name = "sym_long_cold"
-
-name = "sym_no_t"
-name = "sym_only_t"
-name = "sym_t_f"
+# name = "short"
+# name = "long"
+# name = "long_cold"
 
 
-name = "sym"
+name = "test"
 
 folder = "data/" + name + "/"
 folder_vid = "vid/" + name + "/"
