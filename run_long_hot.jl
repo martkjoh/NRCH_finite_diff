@@ -1,12 +1,12 @@
 # Timesteps, gridpoints, length
 const M = 200_000_000
-const N = 50
+const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
 # P rint progress bar
 pr = true
 # Folder for data
-write_folder = "data/short/"
+write_folder = "data/long_hot/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 
@@ -15,10 +15,10 @@ include("numerics.jl")
 
 using Base.Threads
 u = 10.
-D = 1e-5
+D = 1e-2
 
 αs = LinRange(0, 6, 4)
-φs = [-.8, -0.7, -.6, -.5, -.2]
+φs = [-.8, -.7, -.6, -.5, -.2]
 αφ = [(α,φ) for α in αs for φ in φs]
 
 @time @threads for (α, bφ) in αφ

@@ -141,9 +141,12 @@ def make_anim(folder, filename):
 
         m1.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
- 
+        n3 = frames//100
+        if m//n3 - (m-n)//n3 == 1:
+            txt = str((m+1)//n3) + "%"
+            print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate,  interval=50, frames=frames//n, repeat=True, fargs=[F0,])
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,  interval=1, frames=frames//n, repeat=True, fargs=[F0,])
     plt.show()
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
@@ -151,7 +154,7 @@ def make_anim(folder, filename):
 # name = "short"
 # name = "long"
 # name = "long_cold"
-
+# name = "long_hot"
 
 name = "test"
 
@@ -159,17 +162,23 @@ folder = "data/" + name + "/"
 folder_vid = "vid/" + name + "/"
 
 import os, shutil
-from multiprocessing import Pool
+from multiprocessing import Pool, current_process
 if os.path.isdir(folder_vid):
     shutil.rmtree(folder_vid)
 os.mkdir(folder_vid)
 
 fnames = get_all_filenames_in_folder(folder)
 
-[make_anim(folder, fname) for fname in fnames]
+
+import time
+startTime = time.time()
+
+[make_anim(folder, fname) for fname in fnames[:1]]
 
 
 # folder_fname = [(folder, name) for name in fnames]
 # with Pool(10) as pool:
 #     pool.starmap(make_anim, folder_fname)
 
+executionTime = (time.time() - startTime)
+print('Execution time in seconds: ' + str(executionTime))
