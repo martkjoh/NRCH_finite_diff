@@ -1,8 +1,7 @@
  # Timesteps, gridpoints, length
-const M = 10_000_000
+const M = 200_000_000
 const N = 500
-# const L = N/5.
-const L = 10.
+const L = N/5.
 const c = .01 # dt/dx^4 = c
 # P rint progress bar
 pr = true
@@ -15,8 +14,8 @@ include("numerics.jl")
 
 
 u = 10.
-D = 1e-3
-bφ = -.0
-α = 1.
+D = 1e-5
+bφ = -.8
+α = 4.
 param = (u, α, D, bφ)
 @time run_euler(param);

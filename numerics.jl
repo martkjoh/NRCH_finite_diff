@@ -53,6 +53,7 @@ function run_euler(param)
 
     x = LinRange(0, L-dx, N)
     φ = zeros(N, 2)
+    φ = [ sin.(2π.*x/L) cos.(2π.*x/L) ]
 
     param_r = (u, α, σ)
 

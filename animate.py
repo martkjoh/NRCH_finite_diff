@@ -58,7 +58,13 @@ def plot_error(ax, phit, param):
     t = np.linspace(0, frames*dt, frames-1)
     ax.plot(t, dpt[:,0], label="$\\frac{\\mathrm{d} \\bar \\varphi_1}{\\mathrm{d} t}$")
     ax.plot(t, dpt[:,1], label="$\\frac{\\mathrm{d} \\bar \\varphi_2}{\\mathrm{d} t}$")
-    ax.legend()
+    ax.legend(loc=3)
+
+    ax2 = ax.twinx()
+    t = np.linspace(0, frames*dt, frames)
+    ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
+    ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
+    ax2.legend(loc=4)
 
 
 def plot_sol2(ax, param):
@@ -80,7 +86,6 @@ def make_anim(folder, filename):
 
     phit, param = load_file(folder, filename)
     u, a, b, phibar, N, L, T, dt = param
-    L = 10
     dx = L / N
     x = np.linspace(0, L, N)
     D2 = lambda J : ( np.roll(J, 1, axis=-1) + np.roll(J, -1, axis=-1) - 2 * J ) / (dx)**2 
@@ -128,7 +133,7 @@ def make_anim(folder, filename):
     F0[0] = np.sum(F) *dx
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m, F0):
         m = m*n
         n2 = frames//10
@@ -147,38 +152,39 @@ def make_anim(folder, filename):
             print(current_process().name, '\t', txt)
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,  interval=1, frames=frames//n, repeat=True, fargs=[F0,])
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
+
+names = [
+    # "short",
+    # "long",
+    # "long_cold",
+    # "long_hot",
+    # "test",
+    "additional"
+    ]
+
+for name in names:
+    folder = "data/" + name + "/"
+    folder_vid = "vid/" + name + "/"
+
+    import os, shutil
+    from multiprocessing import Pool, current_process
+    if os.path.isdir(folder_vid):
+        shutil.rmtree(folder_vid)
+    os.mkdir(folder_vid)
+
+    fnames = get_all_filenames_in_folder(folder)
 
 
-# name = "short"
-# name = "long"
-# name = "long_cold"
-# name = "long_hot"
+    import time
+    startTime = time.time()
 
-name = "test"
+    # [make_anim(folder, fname) for fname in fnames[:]]
 
-folder = "data/" + name + "/"
-folder_vid = "vid/" + name + "/"
+    folder_fname = [(folder, name) for name in fnames]
+    with Pool(10) as pool:
+        pool.starmap(make_anim, folder_fname)
 
-import os, shutil
-from multiprocessing import Pool, current_process
-if os.path.isdir(folder_vid):
-    shutil.rmtree(folder_vid)
-os.mkdir(folder_vid)
-
-fnames = get_all_filenames_in_folder(folder)
-
-
-import time
-startTime = time.time()
-
-[make_anim(folder, fname) for fname in fnames[:1]]
-
-
-# folder_fname = [(folder, name) for name in fnames]
-# with Pool(10) as pool:
-#     pool.starmap(make_anim, folder_fname)
-
-executionTime = (time.time() - startTime)
-print('Execution time in seconds: ' + str(executionTime))
+    executionTime = (time.time() - startTime)
+    print('Execution time in seconds: ' + str(executionTime))
