@@ -31,6 +31,7 @@ def param_dict_from_filename(s):
     returns a dictionary in the format {'value1': xxx, 'value2': yyy, ...}.
     """
     params = {}
+    s = s.split('*')[0] # leave out everyting after * in filename
     for param in s.split('_'):
         key, value = param.split('=')
         params[key] = float(value)

@@ -47,13 +47,13 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r)
     print('\n')
 end
 
-function run_euler(param)
+function run_euler(param; circ=false, n=1, name_app="")
     u, α, D, bφ = param
     σ = sqrt(2 * D / dt / dx)
 
     x = LinRange(0, L-dx, N)
     φ = zeros(N, 2)
-    φ = [ sin.(2π.*x/L) cos.(2π.*x/L) ]
+    if circ φ = [ sin.(2π.*x/L * n) cos.(2π.*x/L * n) ] end
 
     param_r = (u, α, σ)
 
@@ -69,18 +69,19 @@ function run_euler(param)
 
     param_write = (u, α, D, bφ, N, L, M*dt, dt)
     
-    write_file(φt, param_write)
+    write_file(φt, param_write; name_app=name_app)
 end
 
 ##############
 # Utillities #
 ##############
 
-function write_file(φt, param)
+function write_file(φt, param; name_app=name_app)
     filename = join(
         param_names[i] * '=' * string(param[i]) * "_"
         for i in range(1, length(param_names))
         )[1:end-1]
+    if (name_app!="") filename *= "*" *  name_app end
     w = reshape(permutedims(φt, (3, 2, 1)), (frames*2*N))
     writedlm(write_folder*filename*".txt", w)
 end

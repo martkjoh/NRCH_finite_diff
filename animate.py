@@ -133,7 +133,7 @@ def make_anim(folder, filename):
     F0[0] = np.sum(F) *dx
     frames = len(phit)
 
-    n = 10
+    n = 100
     def animate(m, F0):
         m = m*n
         n2 = frames//10
@@ -151,17 +151,17 @@ def make_anim(folder, filename):
             txt = str((m+1)//n3) + "%"
             print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,  interval=1, frames=frames//n, repeat=True, fargs=[F0,])
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, blit=True,  interval=1, frames=frames//n, repeat=False, fargs=[F0,])
+    plt.show()
+    # anim.save(folder_vid+filename+".mp4", fps=30)
 
 names = [
     # "short",
     # "long",
     # "long_cold",
-    # "long_hot",
-    # "test",
-    "additional"
+    # "long_hot", 
+    "test",
+    # "additional"
     ]
 
 for name in names:
