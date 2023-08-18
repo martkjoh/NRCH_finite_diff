@@ -12,60 +12,34 @@ plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
 
-def add_phase(ax, phibar, alpha):
-    from numpy import pi, sin, cos
-    from matplotlib import cm, ticker, colors as c
-
-    rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
-    color = rgba_to_hex(cm.viridis(.25))
-
-    x0 = 1/np.sqrt(3)
-    x1 = 1/np.sqrt(2)
-    xx1 = np.linspace(x0, x1, 1000)
-    xx2 = np.linspace(x1, 1, 1000)
-    xx = np.linspace(x0, 1, 1000)
-    xx3 = np.linspace(-x1, -x0, 1000)
-    xx4 = np.linspace(-x0, x0, 1000)
-    x = np.linspace(-1, 1)
-
-    a = lambda x : np.sqrt(-3*x**4 + 4*x**2 - 1)
-
-    ax.plot(-xx1, a(xx1), 'b-.')
-    ax.plot(-xx2, a(xx2), 'k-')
-    ax.plot([-x1, -x1], [a(x1), 1], 'g-')
-
-    ax.fill_between(-xx, a(xx),np.zeros_like(xx), color=color, alpha=0.3, linewidth=0.0)
-    ax.fill_between(xx3, a(xx3), 1, color=color, alpha=0.6, hatch='///', linewidth=0.0, edgecolor='#00000000')
-    ax.fill_between(-xx3, a(xx3), 1, color=color, alpha=0.6, hatch='///', linewidth=0.0, edgecolor='#00000000')
-    ax.fill_between(xx4, 0, 1, color=color, alpha=0.6, hatch='///', linewidth=0.0, edgecolor='#00000000')
-    
-    ax.plot(x, x**2, '--', color='purple', label='EL')
-    ax.plot(-np.abs(phibar), alpha, 'ro')
-
-    ax.set_ylabel("$\\alpha/|r|$")
-    ax.set_xlabel("$\\sqrt{u} \\bar \\varphi/|r|$")
-
-    ax.set_ylim(0, .8)
-    ax.set_xlim(-1, .1)
-
-
 def plot_error(ax, phit, param):
     u, a, b, phibar, N, L, T, dt = param
+    ax2 = ax.twinx()
     dx = L / N
-    pt = np.einsum('txi->ti', phit) * dx / L
-    dpt = (pt[1:] - pt[:-1])/dt
     frames = len(phit)
     t = np.linspace(0, frames*dt, frames-1)
+
+    pt = np.einsum('txi->ti', phit) * dx / L
+    dpt = (pt[1:] - pt[:-1])/dt
     ax.plot(t, dpt[:,0], label="$\\frac{\\mathrm{d} \\bar \\varphi_1}{\\mathrm{d} t}$")
     ax.plot(t, dpt[:,1], label="$\\frac{\\mathrm{d} \\bar \\varphi_2}{\\mathrm{d} t}$")
 
-    ax2 = ax.twinx()
     t = np.linspace(0, frames*dt, frames)
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
 
-    ax.legend(loc=3)
+    legend1 = ax.legend(loc=3)
+    legend1.remove()
+    ax2.add_artist(legend1)
+
     ax2.legend(loc=4)
+
+def plot_sol2(ax, param):
+    u, a, b, phibar, N, L, T, dt = param
+    tt = np.linspace(0, L, 1000)
+    ax.plot(tt, (1 + phibar)*np.cos(2*tt/L*2*np.pi) + phibar,":r",label="$A\\cos2\\phi + c$")
+    ax.plot(tt, 2*np.sqrt(-phibar-phibar**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
+
 
 def make_anim(folder, filename):
     filename = filename[:-4]
@@ -74,6 +48,8 @@ def make_anim(folder, filename):
     u, a, b, phibar, N, L, T, dt = param
     dx = L / N
     x = np.linspace(0, L, N)
+    D2 = lambda J : ( np.roll(J, 1, axis=-1) + np.roll(J, -1, axis=-1) - 2 * J ) / (dx)**2 
+    D = lambda J : (np.roll(J, 1, axis=-1) - np.roll(J, -1, axis=-1) ) / (2 * dx)
 
     fig = plt.figure(layout="constrained", figsize=(18, 12))
     gs = GridSpec(3, 2, figure=fig)
@@ -87,6 +63,8 @@ def make_anim(folder, filename):
 
     plot_error(ax4, phit, param)
 
+    plot_sol2(ax[0], param)
+
     l1, = ax[0].plot([], [], 'r-', label='$\\varphi_1$')
     l2, = ax[0].plot([], [], 'k-', label='$\\varphi_2$')
     ax[0].plot([0, L], [phibar, phibar], 'r--')
@@ -96,6 +74,18 @@ def make_anim(folder, filename):
     ax[0].set_ylim(-1.2, 1.2)
     ax[0].legend(loc=1)
     l5 = ax[0].text(L/10, 1, 'progress:')
+
+    l3, = ax[2].plot([], [], 'r-', label='$\\varphi_1$')
+    l4, = ax[2].plot([], [], 'k-', label='$\\varphi_2$')
+    ax[2].set_xlim(0, L) 
+    ax[2].set_ylim(-0.1, 0.1)
+    l6 = ax[2].text(L/10, 0.05, 'average error:\nmax error:')
+
+
+
+    tt = np.linspace(0, L, N)
+    sol1 = (1 + phibar)*np.cos(2*tt/L*2*np.pi) + phibar
+    sol2 = 2*np.sqrt(-phibar-phibar**2)*np.cos(tt/L*2*np.pi)
     
 
     t = np.linspace(0, 2*pi)
@@ -106,11 +96,10 @@ def make_anim(folder, filename):
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
-    add_phase(ax[2], phibar, a/u)
 
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -121,6 +110,15 @@ def make_anim(folder, filename):
         l1.set_data(x, p[:, 0])
         l2.set_data(x, p[:, 1])
 
+        d1 = p[:, 0] - sol1
+        d2 = p[:, 1] - sol2
+        dtot = (np.sum(np.abs(d1)) + np.sum(np.abs(d2))) * dx / L
+        dmax = np.max([np.max(np.abs(d1)), np.max(np.abs(d2))])
+        l3.set_data(x, d1)
+        l4.set_data(x, d2)
+        txt = 'average error: ' + str(dtot) + "\nmax error: " + str(dmax)
+        l6.set_text(txt)
+
         m1.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
         n3 = frames//100
@@ -129,39 +127,26 @@ def make_anim(folder, filename):
             print(current_process().name, '\t', txt)
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, blit=True,  interval=1, frames=frames//n, repeat=False)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
 
-names = [
-    # "short",
-    # "long",
-    # "long_cold",
-    # "long_hot", 
-    "test",
-    # "additional"
-    ]
+name = "sol"
+folder = "data/" + name + "/"
+folder_vid = "vid/" + name + "/"
 
-for name in names:
-    folder = "data/" + name + "/"
-    folder_vid = "vid/" + name + "/"
+import os, shutil
+from multiprocessing import Pool, current_process
+if os.path.isdir(folder_vid):
+    shutil.rmtree(folder_vid)
+os.mkdir(folder_vid)
 
-    import os, shutil
-    from multiprocessing import Pool, current_process
-    if os.path.isdir(folder_vid):
-        shutil.rmtree(folder_vid)
-    os.mkdir(folder_vid)
-
-    fnames = get_all_filenames_in_folder(folder)
+fnames = get_all_filenames_in_folder(folder)
 
 
-    import time
-    startTime = time.time()
+import time
+startTime = time.time()
 
-    # [make_anim(folder, fname) for fname in fnames[:]]
+[make_anim(folder, fname) for fname in fnames]
 
-    folder_fname = [(folder, name) for name in fnames]
-    with Pool(10) as pool:
-        pool.starmap(make_anim, folder_fname)
-
-    executionTime = (time.time() - startTime)
-    print('Execution time in seconds: ' + str(executionTime))
+executionTime = (time.time() - startTime)
+print('Execution time in seconds: ' + str(executionTime))

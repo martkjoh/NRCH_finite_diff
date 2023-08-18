@@ -47,13 +47,16 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r)
     print('\n')
 end
 
-function run_euler(param; circ=false, n=1, name_app="")
+function run_euler(param; init=0, n=1, name_app="")
     u, α, D, bφ = param
     σ = sqrt(2 * D / dt / dx)
 
     x = LinRange(0, L-dx, N)
-    φ = zeros(N, 2)
-    if circ φ = [ sin.(2π.*x/L * n) cos.(2π.*x/L * n) ] end
+    if init==0 φ = zeros(N, 2)
+    elseif init==1 φ = [ sin.(2π.*x/L * n)   cos.(2π.*x/L * n) ]
+    elseif init==2 φ = [ .05 .* cos.(2 .* 2π.*x/L)   .5 .* cos.(1 .* 2π.*x/L) ]
+    elseif init==3 φ = [ 0 .* x     0.2.* cos.(1 .* 2π.*x/L) ] 
+    end
 
     param_r = (u, α, σ)
 

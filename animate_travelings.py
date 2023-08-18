@@ -15,35 +15,32 @@ plt.rc("lines", lw=2)
 
 def make_anim(folder, filenames):
     filenames = [f[:-4] for f in filenames]
+    filename = filenames[0].split("*")[0]
 
     phitparams =  [load_file(folder, filename) for filename in filenames]
     param = phitparams[0][1]
     u, a, b, phibar, N, L, T, dt = param 
     phits = [phit for (phit, param) in phitparams]
-
     dx = L / N
     x = np.linspace(0, L, N)
 
-    fig = plt.figure(layout="constrained", figsize=(12, 18))
+    fig = plt.figure(layout="constrained", figsize=(30, 12))
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
 
-    gs = GridSpec(6, 2, figure=fig)
+    gs = GridSpec(3, 4, figure=fig)
     ax = []
 
-    ind = [(0, 0), (1, 0), (0, 1), (1, 1)]
-    for i,j in ind:
-        i = i * 3
-        axa = fig.add_subplot(gs[0+i:1+i, j])
-        axb = fig.add_subplot(gs[1+i:3+i, j])
+    for i in range(4):
+        axa = fig.add_subplot(gs[0:1, i])
+        axb = fig.add_subplot(gs[1:3, i])
         ax.append([axa, axb])
-
     
     ls = []
     ms = []
     t = np.linspace(0, 2*pi)
     prange = 1.2
     frames = len(phits[0])
-    n = 100
+    n = 10
 
     for i, axi in enumerate(ax):
         axa, axb = axi
@@ -77,11 +74,17 @@ def make_anim(folder, filenames):
             l2.set_data(x, p[:, 1])
             m.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, blit=True,  interval=1, frames=frames//n, repeat=False)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+        n3 = frames//100
+        if k//n3 - (k-n)//n3 == 1:
+            txt = str((k+1)//n3) + "%"
+            print(current_process().name, '\t', txt)
 
-name = "traveling"
+
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=True, blit=True,  interval=1, frames=frames//n, repeat=False)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
+
+name = "traveling2"
 folder = "data/" + name + "/"
 folder_vid = "vid/" + name + "/"
 
@@ -102,6 +105,3 @@ make_anim(folder, fnames)
 
 executionTime = (time.time() - startTime)
 print('Execution time in seconds: ' + str(executionTime))
-
-
-

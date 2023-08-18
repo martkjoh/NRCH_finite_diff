@@ -23,9 +23,9 @@ bφ = -.2
 α = 2.
 param = (u, α, D, bφ)
 
-circs = [false, false, false, true]
+inits = [0, 0, 0, 1]
 
-@time @threads for circ in circs
-    @time run_euler(param; circ=circ)
+@time @threads for init in inits
+    @time run_euler(param; init=init)
 end
 
