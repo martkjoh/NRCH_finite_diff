@@ -4,12 +4,12 @@ using Random
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 10_000
+const frames = 1_000
 const skip = div(M, frames)
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')
 print("dT   = ", dt, '\n')
-param_names = ["u, -r", "a", "D", "phi", "N", "L", "T", "dt"]
+param_names = ["u, -r", "a", "D", "phi1", "phi2", "N", "L", "T", "dt"]
 
 @inline ind(i) = mod(i-1, N)+1
 
@@ -20,7 +20,7 @@ param_names = ["u, -r", "a", "D", "phi", "N", "L", "T", "dt"]
 @inline t∇²(A, i) = (-5/2*A[i] + 4/3*(A[ind(i+1)] + A[ind(i-1)]) - 1/12*(A[ind(i+2)] + A[ind(i-2)])) / dx^2
 
 
-function euler!(φ, μ, δφ, ξ, param_r)
+function euler_SO2!(φ, μ, δφ, ξ, param_r)
     u, α, σ = param_r
     @inbounds for i in 1:N
         @views ruφ² = u * (-1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
@@ -35,7 +35,31 @@ function euler!(φ, μ, δφ, ξ, param_r)
     end
 end
 
-function loop!(φt,  φ, μ, δφ, ξ, param_r)
+
+
+function euler_C4!(φ, μ, δφ, ξ, param_r)
+    u, α, σ = param_r
+    @inbounds for i in 1:N
+        @views ruφ₁² = u * (-1 + 2*φ[i, 1]^2)
+        @views ruφ₂² = u * (-1 + 2*φ[i, 2]^2)
+        @views μ[i, 1] = ruφ₁² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
+        @views μ[i, 2] = ruφ₂² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
+    end 
+    randn!(ξ)
+    ξ .*= σ
+    @inbounds for i in 1:N
+        @views δφ[i, 1] = ( ∇²(μ[:, 1], i) - ∇(ξ[:, 1], i) ) * dt
+        @views δφ[i, 2] = ( ∇²(μ[:, 2], i) - ∇(ξ[:, 2], i) ) * dt
+    end
+end
+
+
+function loop!(φt,  φ, μ, δφ, ξ, param_r, step)
+    if step=="SO2" euler! = euler_SO2!
+    elseif step=="C4" euler! = euler_C4!
+    else throw(ErrorException("Non-valid step string given"))
+    end
+
     for i in axes(φt, 1)[2:end]
         for _ in 1:skip
             euler!(φ, μ, δφ, ξ, param_r)
@@ -47,8 +71,8 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r)
     print('\n')
 end
 
-function run_euler(param; init=0, n=1, name_app="")
-    u, α, D, bφ = param
+function run_euler(param; init=0, n=1, name_app="", step="SO2")
+    u, α, D, bφ1, bφ2 = param
     σ = sqrt(2 * D / dt / dx)
 
     x = LinRange(0, L-dx, N)
@@ -56,6 +80,8 @@ function run_euler(param; init=0, n=1, name_app="")
     elseif init==1 φ = [ sin.(2π.*x/L * n)   cos.(2π.*x/L * n) ]
     elseif init==2 φ = [ .05 .* cos.(2 .* 2π.*x/L)   .5 .* cos.(1 .* 2π.*x/L) ]
     elseif init==3 φ = [ 0 .* x     0.2.* cos.(1 .* 2π.*x/L) ] 
+    elseif init==4 φ = [ zeros(N) cat( ones(N÷2), -ones(N÷2), dims=1) / √2 ]
+    elseif init==5 φ = [cat(ones(N÷4), ones(N÷4), -ones(N÷4), -ones(N÷4), dims=1)/√2 cat(ones(N÷4), -ones(N÷4), -ones(N÷4), ones(N÷4), dims=1) / √2 ]
     end
 
     param_r = (u, α, σ)
@@ -65,12 +91,13 @@ function run_euler(param; init=0, n=1, name_app="")
     δφ = zeros(N, 2)
     ξ = zeros(N, 2)
     
-    φ[:,1] .+= bφ
+    φ[:,1] .+= bφ1
+    φ[:,2] .+= bφ2
     φt[1,:,:] .= φ
 
-    loop!(φt, φ, μ, δφ, ξ, param_r)
+    loop!(φt, φ, μ, δφ, ξ, param_r, step)
 
-    param_write = (u, α, D, bφ, N, L, M*dt, dt)
+    param_write = (u, α, D, bφ1, bφ2, N, L, M*dt, dt)
     
     write_file(φt, param_write; name_app=name_app)
 end

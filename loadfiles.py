@@ -2,8 +2,8 @@ import os
 import numpy as np
 
 
-param_names = ["u, -r", "a", "D", "phi", "N", "L", "T", "dt"]
-param_title = ["u, -r", "\\alpha", "\\beta", "{\\bar \\varphi}", "N", "T", "\\Delta t"]
+param_names = ["u, -r", "a", "D", "phi1", "phi2", "N", "L", "T", "dt"]
+param_title = ["u, -r", "\\alpha", "\\beta", "{\\bar \\varphi_1}", "{\\bar \\varphi_2}", "N", "T", "\\Delta t"]
 
 L = 10.
 
@@ -47,9 +47,9 @@ def load_file(folder, filename):
     file = folder+filename+'.txt'
     param = param_from_filename(filename)
 
-    u, a, b, phi, N, L, T, dt = param
+    u, a, b, phi1, phi2, N, L, T, dt = param
     N = int(N)
-    param = u, a, b, phi, N, L, T, dt
+    param = u, a, b, phi1, phi2, N, L, T, dt
 
     phit = np.loadtxt(file)
     frames = int(len(phit) / (2 * N))
