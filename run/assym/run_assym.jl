@@ -6,7 +6,7 @@ const c = .01 # dt/dx^4 = c
 # P rint progress bar
 pr = true
 # Folder for data
-write_folder = "assym/data/test/"
+write_folder = "data/assym/test/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 

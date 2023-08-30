@@ -145,14 +145,14 @@ def make_anim(folder, filename):
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
 names = [
-    "long",
+    # "long",
     # "sep",
-    # "test",
+    "test",
     ]
 
 for name in names:
-    folder = "assym/data/" + name + "/"
-    folder_vid = "assym/vid/" + name + "/"
+    folder = "data/assym/" + name + "/"
+    folder_vid = "vid/assym/" + name + "/"
 
     import os, shutil
     from multiprocessing import Pool, current_process

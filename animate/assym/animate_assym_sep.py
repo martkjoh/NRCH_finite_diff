@@ -149,8 +149,8 @@ def make_anim(folder, filename):
 
 name = "sep"
 
-folder = "assym/data/" + name + "/"
-folder_vid = "assym/vid/" + name + "/"
+folder = "data/assym" + name + "/"
+folder_vid = "vid/assym/" + name + "/"
 
 import os, shutil
 from multiprocessing import Pool, current_process
