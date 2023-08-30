@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import os, sys
+sys.path.insert(0, os.path.abspath("./"))
 from loadfiles import *
 
 

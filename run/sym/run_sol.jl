@@ -10,7 +10,7 @@ write_folder = "data/sol/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 
-include("numerics.jl")
+include("../../numerics.jl")
 
 
 u = 40.

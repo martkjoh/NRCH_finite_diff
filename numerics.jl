@@ -71,26 +71,34 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r, step)
     print('\n')
 end
 
-function run_euler(param; init=0, n=1, name_app="", step="SO2")
+function set_init!(φ0, init)
+    x = LinRange(0, L-dx, N)
+    if init==1 φ0 .= [ sin.(2π.*x/L * n)   cos.(2π.*x/L * n) ]
+    elseif init==2 φ0 .= [ .05 .* cos.(2 .* 2π.*x/L)   .5 .* cos.(1 .* 2π.*x/L) ]
+    elseif init==3 φ0 .= [ 0 .* x     0.2.* cos.(1 .* 2π.*x/L) ] 
+    elseif init==4 φ0 .= [ zeros(N) cat( ones(N÷2), -ones(N÷2), dims=1) / √2 ]
+    else φ0 .= zeros(N, 2)
+end
+
+
+end
+
+function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
     u, α, D, bφ1, bφ2 = param
     σ = sqrt(2 * D / dt / dx)
-
-    x = LinRange(0, L-dx, N)
-    if init==0 φ = zeros(N, 2)
-    elseif init==1 φ = [ sin.(2π.*x/L * n)   cos.(2π.*x/L * n) ]
-    elseif init==2 φ = [ .05 .* cos.(2 .* 2π.*x/L)   .5 .* cos.(1 .* 2π.*x/L) ]
-    elseif init==3 φ = [ 0 .* x     0.2.* cos.(1 .* 2π.*x/L) ] 
-    elseif init==4 φ = [ zeros(N) cat( ones(N÷2), -ones(N÷2), dims=1) / √2 ]
-    elseif init==5 φ = [cat(ones(N÷4), ones(N÷4), -ones(N÷4), -ones(N÷4), dims=1)/√2 cat(ones(N÷4), -ones(N÷4), -ones(N÷4), ones(N÷4), dims=1) / √2 ]
-    end
-
     param_r = (u, α, σ)
 
     φt = zeros(frames, N, 2)
+    φ = zeros(N, 2)
     μ = zeros(N, 2)
     δφ = zeros(N, 2)
     ξ = zeros(N, 2)
     
+    if any(isnan.(φ0)) set_init!(φ0, init) end
+    # averag value of initial condition should be zero, as we add bφ
+    @assert all(abs.(sum(φ0, dims=1)).<1e-10) 
+
+    φ = φ0
     φ[:,1] .+= bφ1
     φ[:,2] .+= bφ2
     φt[1,:,:] .= φ

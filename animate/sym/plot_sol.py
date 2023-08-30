@@ -4,6 +4,8 @@ from matplotlib.gridspec import GridSpec
 import numpy as np
 from numpy import pi, sqrt
 
+import os, sys
+sys.path.insert(0, os.path.abspath("./"))
 from loadfiles import *
 
 plt.rc("font", family="serif", size=16)
