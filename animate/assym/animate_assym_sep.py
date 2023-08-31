@@ -1,4 +1,4 @@
-from matplotlib import animation
+from matplotlib import animation, cm
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import numpy as np
@@ -12,52 +12,59 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
+rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
+color = rgba_to_hex(cm.viridis(.25))
+
 
 def add_phase(ax, phibar1, phibar2, a):
-    from numpy import pi, sin, cos
-    from matplotlib import cm, ticker, colors as c
+    aa = [0, 0.5, 1, 1.5]
     N = 500
-    kk = 1.4
-    u, v = np.linspace(-kk, kk, N), np.linspace(-kk, kk, N) 
+    L = 1.1
+    u, v = np.linspace(-L, L, N), np.linspace(-L, L, N) 
     u, v = np.meshgrid(u, v)
 
-    rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
-    color = rgba_to_hex(cm.viridis(.25))
-
-    f1 = lambda x, y, a :  ((x**2 - 1) - sqrt(y**4 - a**2 + 0j)).real
-    f2 = lambda x, y, a :  ((x**2 - 1) + sqrt(y**4 - a**2 + 0j)).real
-    x = lambda u, v : sqrt(u**2 + v**2)
-    y = lambda u, v : sqrt(np.abs(u**2 - v**2))
+    f1 = lambda u, v, a :  (- 1 + 3 * (u**2 + v**2) - sqrt((3 * (u**2 - v**2))**2 - a**2 + 0j)).real
+    f2 = lambda u, v, a :  (- 1 + 3 * (u**2 + v**2) + sqrt((3 * (u**2 - v**2))**2 - a**2 + 0j)).real
     f = [f1, f2]
-    g = lambda v, a: sqrt(v**2 + a)
 
-    v0 = np.linspace(0, kk, 500) 
-    u0 = g(v0, a)
-    list1 = [u0, u0, -u0, -u0, v0, v0, -v0, -v0]
-    list2 = [v0, -v0, v0, -v0, u0, -u0, u0, -u0]
-    for l1, l2 in zip(list1, list2):
-        ax.plot(l1, l2, "purple")
+    g = lambda v, a: sqrt(v**2 + a/3)
+    v0 = np.linspace(0, L, 500)
+    sgn1 = [1, 1, -1, -1]
+    sgn2 = [1, -1, 1, -1]
 
-    color = 'black'
-    ls = '--'
-
-    ax.contour(u, v, f1(x(u, v), y(u, v), a), levels=[0], colors=color, linestyles=ls)
-
-    if a>0:
-        lim = max(0,(1 - a)/2)
-        v1 = np.linspace(np.sqrt(lim), np.sqrt(1/2), 100)
-        v2 = np.sqrt(1 - v1**2)
-        sgn1 = [1, 1, -1, -1]
-        sgn2 = [1, -1, 1, -1]
+    for i in range(2):
+        u0 = g(v0, a)
         for s1, s2 in zip(sgn1, sgn2):
-            ax.plot(s1*v1, s2*v2, color="green")
-            ax.plot(s1*v2, s2*v1, color="green")
+            ax.plot(s1*v0, s2*u0, "purple")
+            ax.plot(s1*u0, s2*v0, "purple")
 
-    ax.plot(phibar2, phibar1, 'ro')
+        eig = f[i](u, v, a)
+        if i==0:
+            ax.contour(u, v, eig, levels=[0], colors="black", linestyles="-")
+            ax.contourf(u, v, eig, levels=[np.min(f[i](u, v, a)), 0],  colors=color, alpha=0.3)
+        elif i==1:
+            ax.contour(u, v, eig, levels=[0], colors="blue", linestyles="--")
+            ax.contourf(u, v, eig, levels=[np.min(f[i](u, v, a)), 0],  colors=color, alpha=0.6, hatches=["///"])
 
-    ax.set_xlim(-kk, kk)
-    ax.set_ylim(-kk, kk)
+        if a>0:
+            lim = max(0,(1 - a)/6)
+            v1 = np.linspace(np.sqrt(lim), np.sqrt(1/6), 100)
+            v2 = np.sqrt(1/3 - v1**2)
 
+            for s1, s2 in zip(sgn1, sgn2):
+                ax.plot(s1*v1, s2*v2, color="green")
+                ax.plot(s1*v2, s2*v1, color="green")
+        
+        sq = 1 / sqrt(2)
+        ax.plot([sq, sq, -sq, -sq, sq], [sq, -sq, -sq, sq, sq], 'k--', alpha=.2, lw=3)
+
+        ax.plot(phibar2, phibar1, 'ro')
+
+        ax.set_xlabel("$v_1$")
+        ax.set_ylabel("$v_2$")
+        ax.set_xlim(-L, L)
+        ax.set_ylim(-L, 0.1)
+        ax.set_title("$a = %.1f$"%(a))
 
 
 def plot_error(ax, phit, param):
