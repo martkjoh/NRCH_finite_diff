@@ -122,7 +122,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 10
+    n = 100
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -154,19 +154,23 @@ for name in names:
     folder = "data/assym/" + name + "/"
     folder_vid = "vid/assym/" + name + "/"
 
+
     import os, shutil
     from multiprocessing import Pool, current_process
     if os.path.isdir(folder_vid):
         shutil.rmtree(folder_vid)
-    os.mkdir(folder_vid)
-
+    folders = folder_vid.split("/")
+    for i in range(len(folders)):
+        fol = "/".join(folders[0:i+1]) + "/"
+        if not os.path.isdir(fol):
+            os.mkdir(fol)
+    
     fnames = get_all_filenames_in_folder(folder)
-
 
     import time
     startTime = time.time()
 
-    [make_anim(folder, fname) for fname in fnames[:]]
+    [make_anim(folder, fname) for fname in fnames]
 
     # folder_fname = [(folder, name) for name in fnames]
     # with Pool(10) as pool:

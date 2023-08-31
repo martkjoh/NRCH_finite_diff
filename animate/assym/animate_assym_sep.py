@@ -156,7 +156,11 @@ import os, shutil
 from multiprocessing import Pool, current_process
 if os.path.isdir(folder_vid):
     shutil.rmtree(folder_vid)
-os.mkdir(folder_vid)
+folders = folder_vid.split("/")
+for i in range(len(folders)):
+    folder = "/".join(folders[0:i+1]) + "/"
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
 
 fnames = get_all_filenames_in_folder(folder)
 

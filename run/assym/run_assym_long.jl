@@ -1,5 +1,5 @@
 # Timesteps, gridpoints, length
-const M = 5_000_000
+const M = 200_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
