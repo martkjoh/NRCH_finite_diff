@@ -58,8 +58,6 @@ def add_phase(ax, phibar1, phibar2, a):
     ax.set_xlim(-kk, kk)
     ax.set_ylim(-kk, kk)
 
-
-
 def plot_error(ax, phit, param):
     u, a, b, phibar1, phibar2, N, L, T, dt = param
     dx = L / N
@@ -74,6 +72,10 @@ def plot_error(ax, phit, param):
     t = np.linspace(0, frames*dt, frames)
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
+    
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
 
     ax.legend(loc=3)
     ax2.legend(loc=4)
@@ -82,7 +84,7 @@ def make_anim(folder, filename):
     filename = filename[:-4]
 
     phit, param = load_file(folder, filename)
-    u, a, b, phibar1,  phibar2, N, L, T, dt = param
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
     dx = L / N
     x = np.linspace(0, L, N)
 
@@ -92,6 +94,13 @@ def make_anim(folder, filename):
     ax2 = fig.add_subplot(gs[1:, 1])
     ax3 = fig.add_subplot(gs[1, 0])
     ax4 = fig.add_subplot(gs[2, 0])
+
+    ax1.set_xlabel("$x$")
+    ax1.set_ylabel("$\\varphi$")
+    ax2.set_xlabel("$\\varphi_2$")
+    ax2.set_ylabel("$\\varphi_1$")
+    ax3.set_xlabel("$\\varphi_2$")
+    ax3.set_ylabel("$\\varphi_1$")
 
     ax = [ax1, ax2, ax3]
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
@@ -122,7 +131,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -140,14 +149,14 @@ def make_anim(folder, filename):
             txt = str((m+1)//n3) + "%"
             print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,  interval=1, frames=frames//n, repeat=False)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
 
 names = [
-    # "long",
+    "long",
     # "sep",
-    "test",
+    # "test",
     ]
 
 for name in names:
@@ -170,11 +179,11 @@ for name in names:
     import time
     startTime = time.time()
 
-    [make_anim(folder, fname) for fname in fnames]
+    # [make_anim(folder, fname) for fname in fnames]
 
-    # folder_fname = [(folder, name) for name in fnames]
-    # with Pool(10) as pool:
-    #     pool.starmap(make_anim, folder_fname)
+    folder_fname = [(folder, name) for name in fnames]
+    with Pool(12) as pool:
+        pool.starmap(make_anim, folder_fname)
 
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(executionTime))

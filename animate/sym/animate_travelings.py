@@ -20,7 +20,7 @@ def make_anim(folder, filenames):
 
     phitparams =  [load_file(folder, filename) for filename in filenames]
     param = phitparams[0][1]
-    u, a, b, phibar, N, L, T, dt = param 
+    u, a, b, phibar1, phibar2, N, L, T, dt = param 
     phits = [phit for (phit, param) in phitparams]
     dx = L / N
     x = np.linspace(0, L, N)
@@ -48,7 +48,7 @@ def make_anim(folder, filenames):
 
         l1, = axa.plot([], [], 'r-', label='$\\varphi_1$')
         l2, = axa.plot([], [], 'k-', label='$\\varphi_2$')
-        axa.plot([0, L], [phibar, phibar], 'r--')
+        axa.plot([0, L], [phibar1, phibar1], 'r--')
         axa.plot([0, L], [0, 0], 'k--')
         axa.set_xlim(0, L) 
         axa.set_ylim(-1.2, 1.2)
@@ -57,10 +57,15 @@ def make_anim(folder, filenames):
         ls.append([l1, l2])
 
         m, = axb.plot([], [], 'r--.')
-        axb.plot(0, phibar, 'ro')
+        axb.plot(0, phibar1, 'ro')
         axb.plot(np.cos(t), np.sin(t), 'k--') 
         axb.set_xlim(-prange, prange)
         axb.set_ylim(-prange, prange)
+
+        axa.set_xlabel("$x$")
+        axa.set_ylabel("$\\varphi$")
+        axb.set_xlabel("$\\varphi_2$")
+        axb.set_ylabel("$\\varphi_1$")
 
         ms.append(m)
 
@@ -82,8 +87,8 @@ def make_anim(folder, filenames):
 
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=True,   interval=1, frames=frames//n, repeat=False)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    plt.show()
+    # anim.save(folder_vid+filename+".mp4", fps=30)
 
 name = "traveling2"
 folder = "data/" + name + "/"

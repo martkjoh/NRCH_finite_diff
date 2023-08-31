@@ -14,7 +14,7 @@ plt.rc("lines", lw=2)
 
 
 def plot_error(ax, phit, param):
-    u, a, b, phibar, N, L, T, dt = param
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
     ax2 = ax.twinx()
     dx = L / N
     frames = len(phit)
@@ -28,6 +28,10 @@ def plot_error(ax, phit, param):
     t = np.linspace(0, frames*dt, frames)
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
+    
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
 
     legend1 = ax.legend(loc=3)
     legend1.remove()
@@ -36,17 +40,17 @@ def plot_error(ax, phit, param):
     ax2.legend(loc=4)
 
 def plot_sol2(ax, param):
-    u, a, b, phibar, N, L, T, dt = param
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
     tt = np.linspace(0, L, 1000)
-    ax.plot(tt, (1 + phibar)*np.cos(2*tt/L*2*np.pi) + phibar,":r",label="$A\\cos2\\phi + c$")
-    ax.plot(tt, 2*np.sqrt(-phibar-phibar**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
+    ax.plot(tt, (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1,":r",label="$A\\cos2\\phi + c$")
+    ax.plot(tt, 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
 
 
 def make_anim(folder, filename):
     filename = filename[:-4]
 
     phit, param = load_file(folder, filename)
-    u, a, b, phibar, N, L, T, dt = param
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
     dx = L / N
     x = np.linspace(0, L, N)
     D2 = lambda J : ( np.roll(J, 1, axis=-1) + np.roll(J, -1, axis=-1) - 2 * J ) / (dx)**2 
@@ -59,6 +63,13 @@ def make_anim(folder, filename):
     ax3 = fig.add_subplot(gs[1, 0])
     ax4 = fig.add_subplot(gs[2, 0])
 
+    ax1.set_xlabel("$x$")
+    ax1.set_ylabel("$\\varphi$")
+    ax2.set_xlabel("$\\varphi_2$")
+    ax2.set_ylabel("$\\varphi_1$")
+    ax3.set_xlabel("$x$")
+    ax3.set_ylabel("$\\Delta \\varphi$")
+
     ax = [ax1, ax2, ax3]
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
 
@@ -68,7 +79,7 @@ def make_anim(folder, filename):
 
     l1, = ax[0].plot([], [], 'r-', label='$\\varphi_1$')
     l2, = ax[0].plot([], [], 'k-', label='$\\varphi_2$')
-    ax[0].plot([0, L], [phibar, phibar], 'r--')
+    ax[0].plot([0, L], [phibar1, phibar1], 'r--')
     ax[0].plot([0, L], [0, 0], 'k--')
 
     ax[0].set_xlim(0, L) 
@@ -85,14 +96,14 @@ def make_anim(folder, filename):
 
 
     tt = np.linspace(0, L, N)
-    sol1 = (1 + phibar)*np.cos(2*tt/L*2*np.pi) + phibar
-    sol2 = 2*np.sqrt(-phibar-phibar**2)*np.cos(tt/L*2*np.pi)
+    sol1 = (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1
+    sol2 = 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi)
     
 
     t = np.linspace(0, 2*pi)
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
-    ax[1].plot(0, phibar, 'ro')
+    ax[1].plot(0, phibar1, 'ro')
     ax[1].plot(np.cos(t), np.sin(t), 'k--') 
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
@@ -128,8 +139,8 @@ def make_anim(folder, filename):
             print(current_process().name, '\t', txt)
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    plt.show()
+    # anim.save(folder_vid+filename+".mp4", fps=30)
 
 name = "sol"
 folder = "data/" + name + "/"

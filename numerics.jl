@@ -4,7 +4,7 @@ using Random
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 10_000
+const frames = 1_000
 const skip = div(M, frames)
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')
@@ -73,14 +73,12 @@ end
 
 function set_init!(φ0, init)
     x = LinRange(0, L-dx, N)
-    if init==1 φ0 .= [ sin.(2π.*x/L * n)   cos.(2π.*x/L * n) ]
+    if init==1 φ0 .= [ sin.(2π.*x/L)   cos.(2π.*x/L) ]
     elseif init==2 φ0 .= [ .05 .* cos.(2 .* 2π.*x/L)   .5 .* cos.(1 .* 2π.*x/L) ]
     elseif init==3 φ0 .= [ 0 .* x     0.2.* cos.(1 .* 2π.*x/L) ] 
     elseif init==4 φ0 .= [ zeros(N) cat( ones(N÷2), -ones(N÷2), dims=1) / √2 ]
     else φ0 .= zeros(N, 2)
-end
-
-
+    end
 end
 
 function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))

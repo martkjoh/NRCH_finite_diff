@@ -75,6 +75,10 @@ def plot_error(ax, phit, param):
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
 
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
+
     ax.legend(loc=3)
     ax2.legend(loc=4)
 
@@ -92,6 +96,13 @@ def make_anim(folder, filename):
     ax2 = fig.add_subplot(gs[1:, 1])
     ax3 = fig.add_subplot(gs[1, 0])
     ax4 = fig.add_subplot(gs[2, 0])
+
+    ax1.set_xlabel("$x$")
+    ax1.set_ylabel("$\\varphi$")
+    ax2.set_xlabel("$\\varphi_2$")
+    ax2.set_ylabel("$\\varphi_1$")
+    ax3.set_xlabel("$\\varphi_2$")
+    ax3.set_ylabel("$\\varphi_1$")
 
     ax = [ax1, ax2, ax3]
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
@@ -149,7 +160,7 @@ def make_anim(folder, filename):
 
 name = "sep"
 
-folder = "data/assym" + name + "/"
+folder = "data/assym/" + name + "/"
 folder_vid = "vid/assym/" + name + "/"
 
 import os, shutil
@@ -158,9 +169,9 @@ if os.path.isdir(folder_vid):
     shutil.rmtree(folder_vid)
 folders = folder_vid.split("/")
 for i in range(len(folders)):
-    folder = "/".join(folders[0:i+1]) + "/"
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
+    fol = "/".join(folders[0:i+1]) + "/"
+    if not os.path.isdir(fol):
+        os.mkdir(fol)
 
 fnames = get_all_filenames_in_folder(folder)
 

@@ -65,6 +65,10 @@ def plot_error(ax, phit, param):
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
 
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
+
     ax.legend(loc=3)
     ax2.legend(loc=4)
 

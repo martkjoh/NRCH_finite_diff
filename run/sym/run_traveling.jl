@@ -1,5 +1,5 @@
 # Timesteps, gridpoints, length
-const M = 10_000_000
+const M = 1_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
@@ -18,7 +18,7 @@ u = 10.
 D = 1e-5
 bφ = 0
 α = 1.
-param = (u, α, D, bφ)
+param = (u, α, D, bφ, 0)
 
 inits = [false, false, false, true]
 name_apps = ["1", "2", "3", "4"]
