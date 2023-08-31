@@ -127,7 +127,7 @@ def make_anim(folder, filename):
             txt = str((m+1)//n3) + "%"
             print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, blit=True,  interval=1, frames=frames//n, repeat=False)
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
     # plt.show()
     anim.save(folder_vid+filename+".mp4", fps=30)
 

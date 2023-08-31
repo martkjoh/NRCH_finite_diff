@@ -81,7 +81,7 @@ def make_anim(folder, filenames):
             print(current_process().name, '\t', txt)
 
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=True, blit=True,  interval=1, frames=frames//n, repeat=False)
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=True,   interval=1, frames=frames//n, repeat=False)
     # plt.show()
     anim.save(folder_vid+filename+".mp4", fps=30)
 
