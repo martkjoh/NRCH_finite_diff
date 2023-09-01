@@ -165,7 +165,7 @@ def make_anim(folder, filename):
     plt.show()
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
-name = "sep"
+name = "sep2"
 
 folder = "data/assym/" + name + "/"
 folder_vid = "vid/assym/" + name + "/"

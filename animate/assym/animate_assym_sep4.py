@@ -64,7 +64,7 @@ def add_phase(ax, phibar1, phibar2, a):
         ax.set_ylabel("$v_2$")
         ax.set_xlim(-L, L)
         ax.set_ylim(-L, 0.1)
-
+        ax.set_title("$a = %.1f$"%(a))
 
 
 def plot_error(ax, phit, param):
@@ -81,6 +81,10 @@ def plot_error(ax, phit, param):
     t = np.linspace(0, frames*dt, frames)
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
+
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
 
     ax.legend(loc=3)
     ax2.legend(loc=4)
@@ -100,10 +104,19 @@ def make_anim(folder, filename):
     ax3 = fig.add_subplot(gs[1, 0])
     ax4 = fig.add_subplot(gs[2, 0])
 
+    ax1.set_xlabel("$x$")
+    ax1.set_ylabel("$\\varphi$")
+    ax2.set_xlabel("$\\varphi_2$")
+    ax2.set_ylabel("$\\varphi_1$")
+    ax3.set_xlabel("$\\varphi_2$")
+    ax3.set_ylabel("$\\varphi_1$")
+
     ax = [ax1, ax2, ax3]
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
 
     plot_error(ax4, phit, param)
+
+    xx = np.linspace(0, L, 1000)
 
     l1, = ax[0].plot([], [], 'r-', label='$\\varphi_1$')
     l2, = ax[0].plot([], [], 'k-', label='$\\varphi_2$')
@@ -113,7 +126,6 @@ def make_anim(folder, filename):
 
     ax[0].set_xlim(0, L) 
     ax[0].set_ylim(-1.2, 1.2)
-    ax[0].legend(loc=1)
     l5 = ax[0].text(L/10, 1, 'progress:')
     
 
@@ -121,67 +133,73 @@ def make_anim(folder, filename):
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
     ax[1].plot(phibar2, phibar1, 'ro')
-    ps = 1/sqrt(2)
-    ax[1].plot([ps, ps, -ps, -ps, ps], [ps, -ps, -ps, ps, ps], 'k--') 
+    ax[1].plot(np.cos(t), np.sin(t), 'k--') 
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
     add_phase(ax[2], phibar1, phibar2, a/u)
 
     frames = len(phit)
+    Dt = T/frames
+    l3, = ax[0].plot([], [], 'b', alpha=.2, lw=4,  label="$\\tanh[(x - vt) / \\ell]$")
+
+    ax[0].legend(loc=1)
 
     n = 10
     def animate(m):
         m = m*n
         n2 = frames//10
         txt = 'progress:' + (m+1)//n2*'|'
+        txt = ''
+        l5.set_text(txt)
 
         p = phit[m]
         l1.set_data(x, p[:, 0])
         l2.set_data(x, p[:, 1])
+
         m1.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
-        # k = sqrt(u/2)
-        # t = m*Dt
-        # l3.set_data(x, np.tanh(-k*(x-L/2)+a*(k/8)**2*t)/sqrt(2))
-
+        k = sqrt(u/2)
+        t = m*Dt
+        l3.set_data(x, np.tanh(-k*(x-16.8-t/4))/sqrt(2))
 
         n3 = frames//100
         if m//n3 - (m-n)//n3 == 1:
             txt = str((m+1)//n3) + "%"
             print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n, repeat=False)
+        # plt.savefig("test" + str(m) + ".pdf")
+
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
     plt.show()
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
-names = [
-    # "long",
-    # "sep",
-    "test",
-    ]
+name = "sep4"
 
-for name in names:
-    folder = "data/assym/" + name + "/"
-    folder_vid = "vid/assym/" + name + "/"
+folder = "data/assym/" + name + "/"
+folder_vid = "vid/assym/" + name + "/"
 
-    import os, shutil
-    from multiprocessing import Pool, current_process
-    if os.path.isdir(folder_vid):
-        shutil.rmtree(folder_vid)
-    os.mkdir(folder_vid)
+import os, shutil
+from multiprocessing import Pool, current_process
+if os.path.isdir(folder_vid):
+    shutil.rmtree(folder_vid)
+folders = folder_vid.split("/")
+for i in range(len(folders)):
+    fol = "/".join(folders[0:i+1]) + "/"
+    if not os.path.isdir(fol):
+        os.mkdir(fol)
 
-    fnames = get_all_filenames_in_folder(folder)
+fnames = get_all_filenames_in_folder(folder)
 
 
-    import time
-    startTime = time.time()
+import time
+startTime = time.time()
 
-    [make_anim(folder, fname) for fname in fnames[:]]
+[make_anim(folder, fname) for fname in fnames[:]]
 
-    # folder_fname = [(folder, name) for name in fnames]
-    # with Pool(10) as pool:
-    #     pool.starmap(make_anim, folder_fname)
+# folder_fname = [(folder, name) for name in fnames]
+# with Pool(10) as pool:
+#     pool.starmap(make_anim, folder_fname)
 
-    executionTime = (time.time() - startTime)
-    print('Execution time in seconds: ' + str(executionTime))
+executionTime = (time.time() - startTime)
+print('Execution time in seconds: ' + str(executionTime))
