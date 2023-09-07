@@ -3,6 +3,7 @@ const M = 2_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
+const frames = 10_000
 # P rint progress bar
 pr = true
 # Folder for data

@@ -39,13 +39,6 @@ def plot_error(ax, phit, param):
 
     ax2.legend(loc=4)
 
-def plot_sol2(ax, param):
-    u, a, b, phibar1, phibar2, N, L, T, dt = param
-    tt = np.linspace(0, L, 1000)
-    ax.plot(tt, (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1,":r",label="$A\\cos2\\phi + c$")
-    ax.plot(tt, 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
-
-
 def make_anim(folder, filename):
     filename = filename[:-4]
 
@@ -75,7 +68,12 @@ def make_anim(folder, filename):
 
     plot_error(ax4, phit, param)
 
-    plot_sol2(ax[0], param)
+    tt = np.linspace(0, L, N) + d
+    sol1 = (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1
+    sol2 = 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi)  
+ 
+    ax[0].plot(tt, sol1,":r",label="$A\\cos2\\phi + c$")
+    ax[0].plot(tt, sol2,":k",label="$B\\cos^2\phi$")
 
     l1, = ax[0].plot([], [], 'r-', label='$\\varphi_1$')
     l2, = ax[0].plot([], [], 'k-', label='$\\varphi_2$')
@@ -90,13 +88,8 @@ def make_anim(folder, filename):
     l3, = ax[2].plot([], [], 'r-', label='$\\varphi_1$')
     l4, = ax[2].plot([], [], 'k-', label='$\\varphi_2$')
     ax[2].set_xlim(0, L) 
-    ax[2].set_ylim(-0.02, 0.02)
-    l6 = ax[2].text(L/10, 0.05, 'average error:\nmax error:')
-
-    tt = np.linspace(0, L, N)
-    sol1 = (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1
-    sol2 = 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi)
-    
+    ax[2].set_ylim(-0.1, 0.1)
+    l6 = ax[2].text(L/10, 0.05, 'average error:\nmax error:')  
 
     t = np.linspace(0, 2*pi)
     prange = 1.2
@@ -106,10 +99,9 @@ def make_anim(folder, filename):
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
-
     frames = len(phit)
 
-    n = 100
+    n = 20
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -134,29 +126,14 @@ def make_anim(folder, filename):
         n3 = frames//100
         if m//n3 - (m-n)//n3 == 1:
             txt = str((m+1)//n3) + "%"
-            print(current_process().name, '\t', txt)
-
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
+            print(txt)
+ 
+    anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
     plt.show()
     # anim.save(folder_vid+filename+".mp4", fps=30)
 
-name = "sol"
-folder = "data/" + name + "/"
-folder_vid = "vid/" + name + "/"
-
-import os, shutil
-from multiprocessing import Pool, current_process
-if os.path.isdir(folder_vid):
-    shutil.rmtree(folder_vid)
-os.mkdir(folder_vid)
-
+name = "3"
+folder = "article/data/" + name + "/"
+folder_vid = "article/vid/" + name + "/"
 fnames = get_all_filenames_in_folder(folder)
-
-
-import time
-startTime = time.time()
-
 [make_anim(folder, fname) for fname in fnames]
-
-executionTime = (time.time() - startTime)
-print('Execution time in seconds: ' + str(executionTime))

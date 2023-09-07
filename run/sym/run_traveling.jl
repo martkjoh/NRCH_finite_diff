@@ -3,6 +3,7 @@ const M = 1_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
+const frames = 10_000 
 # P rint progress bar
 pr = true
 # Folder for data
@@ -13,7 +14,7 @@ mkdir(write_folder[1:end-1])
 include("../../numerics.jl")
 
 
-using Base.Threads
+
 u = 10.
 D = 1e-5
 bφ = 0
@@ -27,3 +28,4 @@ name_apps = ["1", "2", "3", "4"]
     @time run_euler(param; init=init, name_app=name_app)
 end
 
+Z

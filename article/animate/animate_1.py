@@ -1,9 +1,7 @@
-from matplotlib import animation
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
 import numpy as np
-from numpy import pi, sqrt
-
+import matplotlib.pyplot as plt
+from matplotlib import animation
+from matplotlib.gridspec import GridSpec
 import os, sys
 sys.path.insert(0, os.path.abspath("./"))
 from loadfiles import *
@@ -53,6 +51,8 @@ def add_phase(ax, phibar1, alpha):
 def plot_error(ax, phit, param):
     u, a, b, phibar1, phibar2, N, L, T, dt = param
     dx = L / N
+    ax2 = ax.twinx()
+
     pt = np.einsum('txi->ti', phit) * dx / L
     dpt = (pt[1:] - pt[:-1])/dt
     frames = len(phit)
@@ -60,7 +60,6 @@ def plot_error(ax, phit, param):
     ax.plot(t, dpt[:,0], label="$\\frac{\\mathrm{d} \\bar \\varphi_1}{\\mathrm{d} t}$")
     ax.plot(t, dpt[:,1], label="$\\frac{\\mathrm{d} \\bar \\varphi_2}{\\mathrm{d} t}$")
 
-    ax2 = ax.twinx()
     t = np.linspace(0, frames*dt, frames)
     ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
     ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
@@ -73,6 +72,7 @@ def plot_error(ax, phit, param):
     legend_1.remove()
     ax2.add_artist(legend_1)
     ax2.legend(loc=4)
+
 
 def make_anim(folder, filename):
     filename = filename[:-4]
@@ -104,8 +104,7 @@ def make_anim(folder, filename):
     ax[0].legend(loc=1)
     l5 = ax[0].text(L/10, 1, 'progress:')
     
-
-    t = np.linspace(0, 2*pi)
+    t = np.linspace(0, 2*np.pi)
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
     ax[1].plot(0, phibar1, phibar2, 'ro')
@@ -135,43 +134,14 @@ def make_anim(folder, filename):
         n3 = frames//100
         if m//n3 - (m-n)//n3 == 1:
             txt = str((m+1)//n3) + "%"
-            print(current_process().name, '\t', txt)
+            print(txt)
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, interval=1, frames=frames//n, repeat=False)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
 
-names = [
-    # "short",
-    # "long",
-    # "long_cold",
-    # "long_hot", 
-    "test",
-    # "chaotic"
-    # "additional"
-    ]
-
-for name in names:
-    folder = "data/" + name + "/"
-    folder_vid = "vid/" + name + "/"
-
-    import os, shutil
-    from multiprocessing import Pool, current_process
-    if os.path.isdir(folder_vid):
-        shutil.rmtree(folder_vid)
-    os.mkdir(folder_vid)
-
-    fnames = get_all_filenames_in_folder(folder)
-
-
-    import time
-    startTime = time.time()
-
-    [make_anim(folder, fname) for fname in fnames[:]]
-
-    # folder_fname = [(folder, name) for name in fnames]
-    # with Pool(10) as pool:
-    #     pool.starmap(make_anim, folder_fname)
-
-    executionTime = (time.time() - startTime)
-    print('Execution time in seconds: ' + str(executionTime))
+name = '1'
+folder = "article/data/" + name + "/"
+folder_vid = "article/vid/" + name + "/"
+fnames = get_all_filenames_in_folder(folder)
+[make_anim(folder, fname) for fname in fnames]

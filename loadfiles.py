@@ -20,7 +20,7 @@ def get_all_filenames_in_folder(folder_path):
     filenames = []
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            if filename[:5]=="noise":
+            if filename==".gitkeep":
                 continue
             filenames.append(filename)
     return filenames

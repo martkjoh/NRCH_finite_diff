@@ -4,8 +4,9 @@ using Random
 
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
-const frames = 1_000
 const skip = div(M, frames)
+# P rint progress bar
+pr = true
 
 print("T    = ", round(M*dt; sigdigits=6), '\n')
 print("dT   = ", dt, '\n')
