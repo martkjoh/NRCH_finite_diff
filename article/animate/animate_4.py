@@ -144,8 +144,8 @@ def make_anim(folder, filename):
             print(txt)
 
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    plt.show()
+    # anim.save(folder_vid+filename+".mp4", fps=30)
 
 name = '4'
 folder = "article/data/" + name + "/"
