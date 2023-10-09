@@ -1,7 +1,7 @@
 using Base.Threads
 
 # Timesteps, gridpoints, length
-const M = 100_000_000
+const M = 200_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
@@ -13,7 +13,7 @@ include("../../numerics.jl")
 u = 40.
 D = 1e-7
 α = 0
-φs = [-.95, -.9, -.8]
+φs = [-.99, -.95, -.9, -.8]
 n, = axes(φs)
 
 @time @threads for i in n

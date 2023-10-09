@@ -24,7 +24,7 @@ def make_anim(folder, filenames):
     dx = L / N
     x = np.linspace(0, L, N)
 
-    fig = plt.figure(layout="constrained", figsize=(30, 12))
+    fig = plt.figure(layout="constrained", figsize=(30, 12), dpi=60)
     fig.suptitle(", ".join(filename_from_param(param).split('_')))
 
     gs = GridSpec(3, 4, figure=fig)
@@ -45,7 +45,7 @@ def make_anim(folder, filenames):
     prange = 1.2
     frames = len(phits[0])
 
-    n = 100
+    n = 10
     for i, axi in enumerate(ax):
         axa, axb = axi
 

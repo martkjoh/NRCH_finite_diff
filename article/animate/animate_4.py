@@ -17,7 +17,7 @@ color = rgba_to_hex(cm.viridis(.25))
 
 def add_phase(ax, phibar1, phibar2, a):
     aa = [0, 0.5, 1, 1.5]
-    N = 500
+    N = 200
     L = 1.1
     u, v = np.linspace(-L, L, N), np.linspace(-L, L, N) 
     u, v = np.meshgrid(u, v)
@@ -27,7 +27,7 @@ def add_phase(ax, phibar1, phibar2, a):
     f = [f1, f2]
 
     g = lambda v, a: sqrt(v**2 + a/3)
-    v0 = np.linspace(0, L, 500)
+    v0 = np.linspace(0, L, N)
     sgn1 = [1, 1, -1, -1]
     sgn2 = [1, -1, 1, -1]
 
@@ -90,7 +90,7 @@ def make_anim(folder, filename):
     dx = L / N
     x = np.linspace(0, L, N)
 
-    fig = plt.figure(layout="constrained", figsize=(18, 12))
+    fig = plt.figure(layout="constrained", figsize=(18, 12), dpi=60)
     gs = GridSpec(3, 2, figure=fig)
     ax1 = fig.add_subplot(gs[0, :]) 
     ax2 = fig.add_subplot(gs[1:, 1])
@@ -126,7 +126,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10

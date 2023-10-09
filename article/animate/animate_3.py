@@ -68,7 +68,7 @@ def make_anim(folder, filename):
 
     plot_error(ax4, phit, param)
 
-    tt = np.linspace(0, L, N) + d
+    tt = np.linspace(0, L, N)
     sol1 = (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1
     sol2 = 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi)  
  
@@ -94,14 +94,14 @@ def make_anim(folder, filename):
     t = np.linspace(0, 2*pi)
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
-    ax[1].plot(0, phibar1, 'ro')
+    ax[1].plot(phibar2, phibar1, 'ro')
     ax[1].plot(np.cos(t), np.sin(t), 'k--') 
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
     frames = len(phit)
 
-    n = 20
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -129,8 +129,8 @@ def make_anim(folder, filename):
             print(txt)
  
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    # plt.show()
+    anim.save(folder_vid+filename+".mp4", fps=30)
 
 name = "3"
 folder = "article/data/" + name + "/"
