@@ -22,12 +22,13 @@ def add_phase(ax, phibar1, alpha):
 
     x0 = 1/np.sqrt(3)
     x1 = 1/np.sqrt(2)
-    xx1 = np.linspace(x0, x1, 1000)
-    xx2 = np.linspace(x1, 1, 1000)
-    xx = np.linspace(x0, 1, 1000)
-    xx3 = np.linspace(-x1, -x0, 1000)
-    xx4 = np.linspace(-x0, x0, 1000)
-    x = np.linspace(-1, 1)
+    n = 200 
+    xx1 = np.linspace(x0, x1, n)
+    xx2 = np.linspace(x1, 1, n)
+    xx = np.linspace(x0, 1, n)
+    xx3 = np.linspace(-x1, -x0, n)
+    xx4 = np.linspace(-x0, x0, n)
+    x = np.linspace(-1, 1, n )
 
     a = lambda x : np.sqrt(-3*x**4 + 4*x**2 - 1)
 
@@ -82,7 +83,7 @@ def make_anim(folder, filename):
     dx = L / N
     x = np.linspace(0, L, N)
 
-    fig = plt.figure(layout="constrained", figsize=(18, 12))
+    fig = plt.figure(layout="constrained", figsize=(18, 12), dpi=60)
     gs = GridSpec(3, 2, figure=fig)
     ax1 = fig.add_subplot(gs[0, :]) 
     ax2 = fig.add_subplot(gs[1:, 1])
@@ -119,7 +120,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 100
+    n = 1
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -139,7 +140,7 @@ def make_anim(folder, filename):
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, interval=1, frames=frames//n, repeat=False)
     plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    # anim.save(folder_vid+filename+".gif", fps=30)
 
 names = [
     # "short",

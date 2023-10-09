@@ -24,7 +24,7 @@ param_names = ["u, -r", "a", "D", "phi1", "phi2", "N", "L", "T", "dt"]
 function euler_SO2!(φ, μ, δφ, ξ, param_r)
     u, α, σ = param_r
     @inbounds for i in 1:N
-        @views ruφ² = u * (-1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
+        @views ruφ² = u * (1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
         @views μ[i, 1] = ruφ² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
         @views μ[i, 2] = ruφ² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
@@ -35,7 +35,6 @@ function euler_SO2!(φ, μ, δφ, ξ, param_r)
         @views δφ[i, 2] = ( ∇²(μ[:, 2], i) - ∇(ξ[:, 2], i) ) * dt
     end
 end
-
 
 
 function euler_C4!(φ, μ, δφ, ξ, param_r)
@@ -72,6 +71,7 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r, step)
     print('\n')
 end
 
+
 function set_init!(φ0, init)
     x = LinRange(0, L-dx, N)
     if init==1 φ0 .= [ sin.(2π.*x/L)   cos.(2π.*x/L) ]
@@ -81,6 +81,7 @@ function set_init!(φ0, init)
     else φ0 .= zeros(N, 2)
     end
 end
+
 
 function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
     u, α, D, bφ1, bφ2 = param
@@ -108,6 +109,7 @@ function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
     
     write_file(φt, param_write; name_app=name_app)
 end
+
 
 ##############
 # Utillities #
