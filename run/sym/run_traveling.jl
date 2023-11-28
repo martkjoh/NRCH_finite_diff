@@ -1,3 +1,6 @@
+using Base.Threads
+
+
 # Timesteps, gridpoints, length
 const M = 1_000_000
 const N = 500
@@ -27,5 +30,3 @@ name_apps = ["1", "2", "3", "4"]
 @time @threads for (init, name_app) in collect(zip(inits, name_apps))
     @time run_euler(param; init=init, name_app=name_app)
 end
-
-Z

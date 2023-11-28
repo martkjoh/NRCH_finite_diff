@@ -1,5 +1,5 @@
  # Timesteps, gridpoints, length
-const M = 100_000_000
+const M = 200_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
@@ -7,7 +7,7 @@ const frames = 10_000
 # P rint progress bar
 pr = true
 # Folder for data
-write_folder = "data/assym/test2/"
+write_folder = "data/assym/domain/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 
@@ -15,7 +15,7 @@ include("../../numerics.jl")
 
 D = 1e-5
 u = 10.
-α = 1.
+α = 1.2
 φ1, φ2  = 0., -.3
 
 # circ = -(1/√6 - 1e-3)

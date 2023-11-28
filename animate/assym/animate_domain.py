@@ -13,6 +13,31 @@ plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
 
+
+def plot_error(ax, phit, param):
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    dx = L / N
+    pt = np.einsum('txi->ti', phit) * dx / L
+    dpt = (pt[1:] - pt[:-1])/dt
+    frames = len(phit)
+    t = np.linspace(0, frames*dt, frames-1)
+    ax.plot(t, dpt[:,0], label="$\\frac{\\mathrm{d} \\bar \\varphi_1}{\\mathrm{d} t}$")
+    ax.plot(t, dpt[:,1], label="$\\frac{\\mathrm{d} \\bar \\varphi_2}{\\mathrm{d} t}$")
+
+    ax2 = ax.twinx()
+    t = np.linspace(0, frames*dt, frames)
+    ax2.plot(t, pt[:, 0]-pt[0,0], 'k--', label="$\\varphi_1(t) - \\varphi_1(0)$")
+    ax2.plot(t, pt[:, 1]-pt[0,1], 'r--', label="$\\varphi_2(t) - \\varphi_2(0)$")
+
+    ax.set_ylabel("$\\dot{\\bar\\varphi}$")
+    ax.set_xlabel("$t$")
+    ax2.set_ylabel("$\\Delta\\bar\\varphi$")
+
+    legend_1 = ax.legend(loc=3)
+    legend_1.remove()
+    ax2.add_artist(legend_1)
+    ax2.legend(loc=4)
+
 def make_anim(folder, filename):
     filename = filename[:-4]
 
@@ -42,7 +67,8 @@ def make_anim(folder, filename):
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
     ax[1].plot(phibar2, phibar1, 'ro')
-    ax[1].plot(np.cos(t), np.sin(t), 'k--') 
+    ps = 1/sqrt(2)
+    ax[1].plot([ps, ps, -ps, -ps, ps], [ps, -ps, -ps, ps, ps], 'k--') 
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
     ax[1].set_xlabel("$\\varphi_2$")
@@ -50,7 +76,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -73,18 +99,12 @@ def make_anim(folder, filename):
     anim.save(folder_vid+filename+".mp4", fps=10)
 
 names = [
-    # "short",
-    # "long",
-    # "long_cold",
-    # "long_hot", 
-    "test2",
-    # "chaotic"
-    # "additional"
+    "domain"
     ]
 
 for name in names:
-    folder = "data/" + name + "/"
-    folder_vid = "vid/" + name + "/"
+    folder = "data/assym/" + name + "/"
+    folder_vid = "vid/assym/" + name + "/"
 
     import os, shutil
     from multiprocessing import Pool, current_process
