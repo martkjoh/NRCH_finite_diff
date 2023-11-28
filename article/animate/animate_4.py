@@ -126,7 +126,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 100
+    n = 10
     def animate(m):
         m = m*n
         n2 = frames//10

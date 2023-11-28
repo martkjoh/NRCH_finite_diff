@@ -24,7 +24,7 @@ param_names = ["u, -r", "a", "D", "phi1", "phi2", "N", "L", "T", "dt"]
 function euler_SO2!(φ, μ, δφ, ξ, param_r)
     u, α, σ = param_r
     @inbounds for i in 1:N
-        @views ruφ² = u * (1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
+        @views ruφ² = u * (-1 + (φ[i, 1]^2 + φ[i, 2]^2 ))
         @views μ[i, 1] = ruφ² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
         @views μ[i, 2] = ruφ² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
