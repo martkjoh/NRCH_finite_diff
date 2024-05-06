@@ -2,6 +2,9 @@ using DelimitedFiles
 using BenchmarkTools
 using Random
 
+seed = 1
+rng = Random.Xoshiro(seed)
+
 const dx = L / N
 const dt = round(c * (dx)^4; sigdigits=6)
 const skip = div(M, frames)
@@ -28,7 +31,7 @@ function euler_SO2!(φ, μ, δφ, ξ, param_r)
         @views μ[i, 1] = ruφ² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
         @views μ[i, 2] = ruφ² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
-    randn!(ξ)
+    randn!(rng, ξ)
     ξ .*= σ
     @inbounds for i in 1:N
         @views δφ[i, 1] = ( ∇²(μ[:, 1], i) - ∇(ξ[:, 1], i) ) * dt
@@ -45,7 +48,7 @@ function euler_C4!(φ, μ, δφ, ξ, param_r)
         @views μ[i, 1] = ruφ₁² * φ[i, 1] - t∇²(φ[:, 1], i) + α * φ[i, 2]
         @views μ[i, 2] = ruφ₂² * φ[i, 2] - t∇²(φ[:, 2], i) - α * φ[i, 1]
     end 
-    randn!(ξ)
+    randn!(rng, ξ)
     ξ .*= σ
     @inbounds for i in 1:N
         @views δφ[i, 1] = ( ∇²(μ[:, 1], i) - ∇(ξ[:, 1], i) ) * dt
