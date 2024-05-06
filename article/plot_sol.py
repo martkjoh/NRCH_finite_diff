@@ -16,9 +16,7 @@ name = "3"
 folder = "article/data/" + name + "/"
 fnames = get_all_filenames_in_folder(folder)
 
-for i, filename in enumerate(fnames):
-    filename = filename[:-4]
-
+def plot(filename):
     phit, param = load_file(folder, filename)
 
     u, a, b, phibar1, phibar2, N, L, T, dt = param
@@ -77,5 +75,59 @@ for i, filename in enumerate(fnames):
     ax[1].set_ylabel("$\\varphi_1$")
 
     ax[2].ticklabel_format(axis='y', scilimits=(1,-1))
-    # plt.show()
-    plt.savefig("fig/sol2_"+str(i)+".pdf")
+    plt.show()
+    # plt.savefig("fig/sol2_"+str(i)+".pdf")
+
+
+def plot_poster(filename):
+    phit, param = load_file(folder, filename)
+
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    dx = L / N
+    x = np.linspace(0, L, N)
+
+    fig, ax = plt.subplots(1, 2, figsize=(9, 4.5), sharey=True)
+
+    sol1 = (1 + phibar1)*np.cos(2*x/L*2*np.pi) + phibar1
+    sol2 = 2*np.sqrt(-phibar1-phibar1**2)*np.cos(x/L*2*np.pi)
+
+    ax[0].plot(x/L, sol1, '-.', color='gray', alpha=1, label="sol", lw=5)
+    ax[0].plot(x/L, sol2, '-.', color='gray', alpha=1, lw=5)
+
+    p = phit[-1]
+    ax[0].plot(x/L, p[:, 0], 'r-', label='$\\varphi_1$')
+    ax[0].plot(x/L, p[:, 1], 'k-', label='$\\varphi_2$')
+    ax[0].plot([0, 1], [phibar1, phibar1], 'r--')
+    ax[0].plot([0, 1], [0, 0], 'k--')
+
+    ax[0].set_xlim(0, 1.) 
+    ax[0].set_ylim(-1.2, 1.2)
+    ax[1].set_xlabel("$x/L$")
+    ax[0].set_ylabel("$\\varphi/\\varphi^*$")
+    ax[0].legend(loc=1)
+
+    d1 = p[:, 0] - sol1
+    d2 = p[:, 1] - sol2
+    dtot = (np.sum(np.abs(d1)) + np.sum(np.abs(d2))) * dx / L
+    dmax = np.max([np.max(np.abs(d1)), np.max(np.abs(d2))])
+
+
+    t = np.linspace(0, 2*pi)
+    prange = 1.2
+    ax[1].plot(0, phibar1, 'ro')
+    ax[1].plot(np.cos(t), np.sin(t), 'k--') 
+    ax[1].set_xlim(-prange, prange)
+    ax[1].set_ylim(-prange, prange)
+    ax[1].plot([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]], 'r--.')
+    ax[1].set_xlabel("$\\varphi_2/\\varphi^*$")
+
+    plt.tight_layout()
+
+    plt.savefig("fig/sol2_poster_"+str(i)+".pdf")
+
+
+for i, filename in enumerate(fnames):
+    filename = filename[:-4]
+    # plot(filename)
+    plot_poster(filename) 
+    
