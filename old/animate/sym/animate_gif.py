@@ -69,15 +69,16 @@ def make_anim(folder, filename):
             print(current_process().name, '\t', txt)
 
     anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, interval=1, frames=frames//n, repeat=True)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=10)
+    plt.show()
+    # anim.save(folder_vid+filename+".mp4", fps=10)
 
 names = [
+    "test",
     # "short",
     # "long",
     # "long_cold",
     # "long_hot", 
-    "test2",
+    # "test2",
     # "chaotic"
     # "additional"
     ]

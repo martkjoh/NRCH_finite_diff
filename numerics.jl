@@ -116,6 +116,7 @@ end
 ##############
 
 function write_file(φt, param; name_app=name_app)
+    if ! isdir(write_folder) mkpath(write_folder) end
     filename = join(
         param_names[i] * '=' * string(param[i]) * "_"
         for i in range(1, length(param_names))

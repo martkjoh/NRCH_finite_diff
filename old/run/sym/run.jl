@@ -1,5 +1,5 @@
  # Timesteps, gridpoints, length
-const M = 10_000_000
+const M = 100_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
@@ -12,7 +12,7 @@ write_folder = "data/test/"
 # rm(write_folder, recursive=true, force=true)
 # mkdir(write_folder[1:end-1])
 
-include("../../numerics.jl")
+include("../../../numerics.jl")
 
 
 u = 10.

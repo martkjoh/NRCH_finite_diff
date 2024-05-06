@@ -11,7 +11,7 @@ write_folder = "data/short/"
 rm(write_folder, recursive=true, force=true)
 mkdir(write_folder[1:end-1])
 
-include("../../numerics.jl")
+include("../../../numerics.jl")
 
 
 using Base.Threads
