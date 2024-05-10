@@ -1,3 +1,6 @@
 __pycache__/
+blender/
 *.txt
 *.mp4
+*.pdf
+*.svg

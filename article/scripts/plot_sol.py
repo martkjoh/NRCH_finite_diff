@@ -122,12 +122,12 @@ def plot_poster(filename):
     ax[1].set_xlabel("$\\varphi_2/\\varphi^*$")
 
     plt.tight_layout()
-
-    plt.savefig("fig/sol2_poster_"+str(i)+".pdf")
+    plt.show()
+    # plt.savefig("fig/sol2_poster_"+str(i)+".pdf")
 
 
 for i, filename in enumerate(fnames):
     filename = filename[:-4]
-    # plot(filename)
-    plot_poster(filename) 
+    plot(filename)
+    # plot_poster(filename) 
     

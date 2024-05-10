@@ -11,7 +11,7 @@ write_folder = "article/data/3/"
 include("../../numerics.jl")
 
 u = 40.
-D = 1e-7
+D = 1e-7 #! Update this!
 α = 0
 φs = [-.99, -.95, -.9, -.8]
 n, = axes(φs)
