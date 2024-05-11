@@ -12,7 +12,7 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
-SAVE = True
+SAVE = False
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)

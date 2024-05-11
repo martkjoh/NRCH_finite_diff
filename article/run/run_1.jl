@@ -5,13 +5,14 @@ const M = 200_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
-const frames = 10_000
+# const frames = 10_000
+const frames = 1_000
 # Folder for data
 write_folder = "article/data/1/"
 include("../../numerics.jl")
 
 u = 10.
-D = 1e-5
+D = 2e-4
 bφ2 = 0.
 
 φs = [-0.5, -0.7, -0.8, -0.5]

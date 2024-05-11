@@ -12,6 +12,11 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
+SAVE = True
+
+def plot_vid(anim, path, **kwargs):
+    if SAVE: anim.save(path, **kwargs)
+    else: plt.show()
 
 def plot_error(ax, phit, param):
     u, a, b, phibar1, phibar2, N, L, T, dt = param
@@ -101,7 +106,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 10
+    n = 5
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -129,8 +134,7 @@ def make_anim(folder, filename):
             print(txt)
  
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    plot_vid(anim, folder_vid+filename+".mp4", fps=20)
 
 name = "3"
 folder = "article/data/" + name + "/"

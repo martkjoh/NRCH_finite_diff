@@ -11,6 +11,13 @@ plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
 
+SAVE = True
+
+def plot_vid(anim, path, **kwargs):
+    if SAVE: anim.save(path, **kwargs)
+    else: plt.show()
+
+
 def add_phase(ax, phibar1, alpha):
     from numpy import pi, sin, cos
     from matplotlib import cm, ticker, colors as c
@@ -108,7 +115,7 @@ def make_anim(folder, filename):
     t = np.linspace(0, 2*np.pi)
     prange = 1.2
     m1, = ax[1].plot([], [], 'r--.')
-    ax[1].plot(0, phibar1, phibar2, 'ro')
+    ax[1].plot(phibar2, phibar1, 'ro')
     ax[1].plot(np.cos(t), np.sin(t), 'k--') 
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
@@ -119,7 +126,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 10
+    n = 1
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -138,8 +145,9 @@ def make_anim(folder, filename):
             print(txt)
 
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+
+    plot_vid(anim, folder_vid+filename+".mp4", fps=20)
+
 
 name = '1'
 folder = "article/data/" + name + "/"

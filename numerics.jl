@@ -131,12 +131,7 @@ end
 
 function check(φ, i)
     n = frames//10
-    if any(isnan, φ)
-        throw(ErrorException("Error, NaN detected" ))
-    end
-
-    if (div(i,n)) - div(i-1,n) == 1 && pr
-        print("\r"*"|"^div(i,n))
-    end
+    if any(isnan, φ) throw(ErrorException("Error, NaN detected" )) end
+    if (div(i,n)) - div(i-1,n) == 1 && pr print("\r"*"|"^div(i,n)) end
 end
 

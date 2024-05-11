@@ -1,17 +1,17 @@
 using Base.Threads
 
 # Timesteps, gridpoints, length
-const M = 1_000
+const M = 200_000_000
 const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
-const frames = 10_000
+const frames = 1_000
 # Folder for data
 write_folder = "article/data/2/"
 include("../../numerics.jl")
 
 u = 10.
-D = 1e-5
+D = 2e-4
 bφ = -.2
 α = 1.
 param = (u, α, D, bφ, 0., 0)

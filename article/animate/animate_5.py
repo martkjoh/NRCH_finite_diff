@@ -14,6 +14,11 @@ plt.rc("lines", lw=2)
 rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
 color = rgba_to_hex(cm.viridis(.25))
 
+SAVE = False
+
+def plot_vid(anim, path, **kwargs):
+    if SAVE: anim.save(path, **kwargs)
+    else: plt.show()
 
 def add_phase(ax, phibar1, phibar2, a):
     aa = [0, 0.5, 1, 1.5]
@@ -170,8 +175,7 @@ def make_anim(folder, filename):
         # plt.savefig("test" + str(m) + ".pdf")
 
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    # plt.show()
-    anim.save(folder_vid+filename+".mp4", fps=30)
+    plot_vid(anim, folder_vid+filename+".mp4", fps=30)
 
 name = '5'
 folder = "article/data/" + name + "/"
