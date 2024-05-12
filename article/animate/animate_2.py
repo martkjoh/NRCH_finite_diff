@@ -12,7 +12,7 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
-SAVE = False
+SAVE = True
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)
@@ -51,7 +51,7 @@ def make_anim(folder, filenames):
     prange = 1.2
     frames = len(phits[0])
 
-    n = 100
+    n = 10
     for i, axi in enumerate(ax):
         axa, axb = axi
 

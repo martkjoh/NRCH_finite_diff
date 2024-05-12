@@ -40,8 +40,11 @@ def plot(filename):
 
     ax[0].plot(x, sol1, '-.', color='gray', alpha=1, label="sol", lw=5)
     ax[0].plot(x, sol2, '-.', color='gray', alpha=1, lw=5)
+    
 
-    p = phit[-1]
+    T = -50
+
+    p = phit[T]
     ax[0].plot(x, p[:, 0], 'r-', label='$\\varphi_1$')
     ax[0].plot(x, p[:, 1], 'k-', label='$\\varphi_2$')
     ax[0].plot([0, L], [phibar1, phibar1], 'r--')
@@ -75,8 +78,8 @@ def plot(filename):
     ax[1].set_ylabel("$\\varphi_1$")
 
     ax[2].ticklabel_format(axis='y', scilimits=(1,-1))
-    plt.show()
-    # plt.savefig("fig/sol2_"+str(i)+".pdf")
+    # plt.show()
+    plt.savefig("article/scripts/fig/sol2_"+str(i)+".pdf")
 
 
 def plot_poster(filename):

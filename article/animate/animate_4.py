@@ -15,7 +15,7 @@ rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
 color = rgba_to_hex(cm.viridis(.25))
 
 
-SAVE = False
+SAVE = True
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)
@@ -133,7 +133,7 @@ def make_anim(folder, filename):
 
     frames = len(phit)
 
-    n = 10
+    n = 1
     def animate(m):
         m = m*n
         n2 = frames//10

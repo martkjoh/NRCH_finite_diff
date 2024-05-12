@@ -1,6 +1,7 @@
 using DelimitedFiles
 using BenchmarkTools
 using Random
+using ProgressMeter
 
 seed = 1
 rng = Random.Xoshiro(seed)
@@ -63,7 +64,7 @@ function loop!(φt,  φ, μ, δφ, ξ, param_r, step)
     else throw(ErrorException("Non-valid step string given"))
     end
 
-    for i in axes(φt, 1)[2:end]
+    @showprogress for i in axes(φt, 1)[2:end]
         for _ in 1:skip
             euler!(φ, μ, δφ, ξ, param_r)
             φ .+= δφ

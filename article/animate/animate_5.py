@@ -14,7 +14,7 @@ plt.rc("lines", lw=2)
 rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
 color = rgba_to_hex(cm.viridis(.25))
 
-SAVE = False
+SAVE = True
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)
