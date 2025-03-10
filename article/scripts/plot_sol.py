@@ -78,8 +78,8 @@ def plot(filename):
     ax[1].set_ylabel("$\\varphi_1$")
 
     ax[2].ticklabel_format(axis='y', scilimits=(1,-1))
-    # plt.show()
-    plt.savefig("article/scripts/fig/sol2_"+str(i)+".pdf")
+    plt.show()
+    # plt.savefig("article/scripts/fig/sol2_"+str(i)+".pdf")
 
 
 def plot_poster(filename):
@@ -132,5 +132,5 @@ def plot_poster(filename):
 for i, filename in enumerate(fnames):
     filename = filename[:-4]
     plot(filename)
-    # plot_poster(filename) 
+    plot_poster(filename) 
     
