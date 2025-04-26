@@ -18,7 +18,7 @@ param_names = ["u, -r", "a", "D", "phi1", "phi2", "N", "L", "T", "dt"]
 
 @inline ind(i) = mod(i-1, N)+1
 
-# Finite difference coeficcients: https://en.wikipedia.org/wiki/Finite_difference_coefficient
+# Finite difference coefficients: https://en.wikipedia.org/wiki/Finite_difference_coefficient
 
 @inline ∇(A, i)  = ( 8*(A[ind(i + 1)] - A[ind(i - 1)]) - (A[ind(i + 2)] - A[ind(i - 2)]) ) / (12*dx)
 @inline ∇²(A, i)  = ( 8*( ∇(A,i + 1) - ∇(A,i - 1)) - (∇(A,i + 2) - ∇(A,i - 1)) ) / (12*dx)
