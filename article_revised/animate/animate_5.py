@@ -141,6 +141,12 @@ def make_anim(folder, filename):
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
+    # Squirecle solution
+    d = 0.12
+    At = (1 + d * np.sin(2*t+np.pi/4)**2) /np.sqrt(2)
+    AT = np.cos(x/(2*r))
+    ax[1].plot(At*np.cos(t), At*np.sin(t), 'k--') 
+
     add_phase(ax[2], phibar1, phibar2, a/u)
 
     frames = len(phit)
