@@ -87,7 +87,7 @@ function set_init!(φ0, init)
 end
 
 
-function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
+function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2), write_folder=write_folder)
     u, α, D, bφ1, bφ2 = param
     σ = sqrt(2 * D / dt / dx)
     param_r = (u, α, σ)
@@ -100,7 +100,7 @@ function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
     
     if any(isnan.(φ0)) set_init!(φ0, init) end
     # averag value of initial condition should be zero, as we add bφ
-    @assert all(abs.(sum(φ0, dims=1)).<1e-10) 
+    @assert all(abs.(sum(φ0, dims=1)).<1e-10)
 
     φ = φ0
     φ[:,1] .+= bφ1
@@ -111,7 +111,7 @@ function run_euler(param; init=0, name_app="", step="SO2", φ0=fill(NaN, N, 2))
 
     param_write = (u, α, D, bφ1, bφ2, N, L, M*dt, dt)
     
-    write_file(φt, param_write; name_app=name_app)
+    write_file(φt, param_write; name_app=name_app, write_folder=write_folder)
 end
 
 
@@ -119,7 +119,7 @@ end
 # Utillities #
 ##############
 
-function write_file(φt, param; name_app=name_app)
+function write_file(φt, param; name_app=name_app, write_folder=write_folder)
     if ! isdir(write_folder) mkpath(write_folder) end
     filename = join(
         param_names[i] * '=' * string(param[i]) * "_"

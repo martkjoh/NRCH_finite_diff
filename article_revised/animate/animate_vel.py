@@ -3,6 +3,7 @@ from numpy import pi, sqrt
 from matplotlib import animation, cm
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+from matplotlib.animation import FuncAnimation as FA
 import os, sys
 sys.path.insert(0, os.path.abspath("./"))
 from loadfiles import *
@@ -156,10 +157,10 @@ def make_anim(folder, filename):
 
     ax[0].legend(loc=1)
 
-    n = 10
+    n = 1
     def animate(m):
         m = m*n
-        n2 = frames//10
+        n2 = frames//1
         txt = 'progress:' + (m+1)//n2*'|'
         txt = ''
         l5.set_text(txt)
@@ -174,19 +175,132 @@ def make_anim(folder, filename):
         t = m*Dt
         l3.set_data(x, np.tanh(-k*(x-16.8-t/4))/sqrt(2))
 
-        n3 = frames//100
+        n3 = frames//10
         if m//n3 - (m-n)//n3 == 1:
             txt = str((m+1)//n3) + "%"
             print(txt)
 
         # plt.savefig("test" + str(m) + ".pdf")
 
-    anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
+    anim = animation.FuncAnimation(fig, animate, interval=1000, frames=frames//n)
     plot_vid(anim, folder_vid+filename+".mp4", fps=30)
 
-name = '5'
-folder = "article_revised/data/" + name + "/"
-folder_vid = "article_revised/vid/" + name + "/"
-fnames = get_all_filenames_in_folder(folder)
-[make_anim(folder, fname) for fname in fnames]
 
+def get_w(f, N, x, L):
+    zerp = []
+    zerm = []
+    for i in range(N): # 1:N
+        j = (i+1)%(N)
+        if f[i]*f[j]<0:
+            x1, x2 = x[i], x[j]
+            y1, y2 = f[i], f[j]
+            if x2<x1: x2 = x2 + L 
+            x0 = x1 - (x2 - x1) * y1/(y2 - y1)
+            x0 = x0 % L
+            if f[i]<0: zerm.append(x0) # push!(zerm, x0)
+            else: zerp.append(x0) # push!(zerp, x0)
+
+    return [*zerm, *zerp]
+
+
+def get_wf(folder, filename):
+    filename = filename[:-4]
+
+    phit, param = load_file(folder, filename)
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    dx = L / N
+    x = np.linspace(0, L, N)
+
+    ft = phit[:, :, 0]
+    gt = phit[:, :, 1]
+    wf = np.array([get_w(f, N, x, L) for f in ft]).T
+    wg = np.array([get_w(g, N, x, L) for g in gt]).T
+
+    return ft, gt, wf, wg, x, param
+
+
+def plot_NRCH(folder, filename):
+    ft, gt, wf, wg, x, param = get_wf(folder, filename)
+    M = len(wf[0])
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    r = - u
+
+    fig, ax = plt.subplots()
+    l1 = ax.plot(x, ft[0], '-')[0]
+    l2 = ax.plot(x, gt[0], "-")[0]
+    l3 = ax.plot(wf[0,0], 0, 'kx')[0]
+    ax.set_ylim(-1.5, 1.5)
+    
+    def anim(n):
+        l1.set_data(x, ft[n])
+        l2.set_data(x, gt[n])
+        l3.set_data(wf[0, n], 0)
+        return [l1,l2,l3]
+    
+    a = FA(fig, anim, interval=1, frames=M, repeat=True)
+    plt.show()
+
+bn = 0
+def plot_walls(folder, filename):
+    ft, gt, wf, wg, x, param = get_wf(folder, filename)
+    M = len(wf[0])
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    r = - u
+    dt = T / M
+    t = np.linspace(0, T, M)
+
+    fig, ax = plt.subplots(2, figsize=(16, 8))
+    w = [wf, wg][bn]
+
+    S = np.abs(w[1, 0] - w[0, 0]) 
+    v = a / S * L / (L - S)
+    x0 = w[1, 0]
+    
+    ax[0].plot(t, w[1])
+    ax[0].plot(t, x0 + v*t, '--k')
+
+    dxdt = (w[1, 2:] - w[1, 0:-2]) / (2*dt)
+    ax[1].plot(t[1:-1], dxdt)
+    ax[1].plot(t, v * np.ones_like(t), "--k")
+    vav = np.mean(dxdt[len(dxdt)//2:]) # last half
+    ax[1].plot(t, vav * np.ones_like(t), "--g")
+
+    ax[0].set_title(str(a) + ", " + str(vav))
+    plt.show()
+
+def get_vs(folder, filename):
+    ft, gt, wf, wg, x, param = get_wf(folder, filename)
+    M = len(wf[0])
+    u, a, b, phibar1, phibar2, N, L, T, dt = param
+    dt = T / M
+    t = np.linspace(0, T, M)
+    w = [wf, wg][bn]
+    S = np.abs(w[1, 0] - w[0, 0])
+    v = a / S * L / (L - S)
+    dxdt = (w[1, 2:] - w[1, 0:-2]) / (2*dt)
+    vav = np.mean(dxdt[len(dxdt)//2:]) # last half
+    return a, v, vav
+
+
+
+name = 'vel'
+
+sizes = [60, 80, 100, 120, 140]
+for i, size in enumerate(sizes):
+    folder = "article_revised/data/" + name + "/{size}/".format(size=size)
+    fnames = get_all_filenames_in_folder(folder)
+    a, v0, va = np.array([get_vs(folder, fname) for fname in fnames]).T
+    indx = np.argsort(a)
+    a = a[indx]
+    v0 = v0[indx]
+    va = va[indx]
+    color = cm.viridis(i/(len(sizes)-1))
+    plt.plot(a, v0, color=color)
+    plt.plot(a, va, 'x', color=color)
+
+plt.show()
+
+# for fname in fnames:
+#     # make_anim(folder, fname)
+#     plot_NRCH(folder, fname)
+#     plot_walls(folder, fname)
