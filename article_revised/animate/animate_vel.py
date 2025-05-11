@@ -279,28 +279,45 @@ def get_vs(folder, filename):
     v = a / S * L / (L - S)
     dxdt = (w[1, 2:] - w[1, 0:-2]) / (2*dt)
     vav = np.mean(dxdt[len(dxdt)//2:]) # last half
-    return a, v, vav
+    return a, v, vav, S
 
 
 
 name = 'vel'
 
-sizes = [60, 80, 100, 120, 140]
+
+sizes = [50, 75, 100, 125, 150, 200, 250, 300,][::-1]
+fig, ax = plt.subplots(1,2, sharey=True)
+Ss = []
 for i, size in enumerate(sizes):
     folder = "article_revised/data/" + name + "/{size}/".format(size=size)
     fnames = get_all_filenames_in_folder(folder)
-    a, v0, va = np.array([get_vs(folder, fname) for fname in fnames]).T
-    indx = np.argsort(a)
+    a, v0, va, S = np.array([get_vs(folder, fname) for fname in fnames]).T
+    indx = np.argsort(a)[:10]
     a = a[indx]
     v0 = v0[indx]
     va = va[indx]
     color = cm.viridis(i/(len(sizes)-1))
-    plt.plot(a, v0, color=color)
-    plt.plot(a, va, 'x', color=color)
+    # ax[0].plot(a, v0, color=color)
+    ax[0].plot(a, va, '-o', color=color, label="$S = {S:.0f}$".format(S=S[0]))
+    ax[1].plot(S[-1], va[-1], 'o', color=color)
+    Ss.append(S[-1])
 
+ax[0].set_xlabel('$\\alpha$')
+ax[0].set_ylabel('$v$')
+
+Ss = np.array(Ss)
+L = 50
+ax[1].plot(Ss, va[-1] * Ss[-1] / Ss , 'k--', zorder=0, label="$1 / S$")
+ax[1].set_xlabel('$S$')
+
+    # for fname in fnames[-1:]:
+    #     # make_anim(folder, fname)
+    #     plot_NRCH(folder, fname)
+    #     plot_walls(folder, fname)
+
+
+ax[0].legend(fontsize=12)
+ax[1].legend()
 plt.show()
 
-# for fname in fnames:
-#     # make_anim(folder, fname)
-#     plot_NRCH(folder, fname)
-#     plot_walls(folder, fname)
