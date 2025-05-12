@@ -1,6 +1,6 @@
 # Timesteps, gridpoints, length
-const M = 100_000_000
-const N = 200
+const M = 400_000_000
+const N = 500
 const L = N/5.
 const c = .01 # dt/dx^4 = c
 const frames = 100

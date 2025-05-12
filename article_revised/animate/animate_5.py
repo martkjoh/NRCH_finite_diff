@@ -14,7 +14,7 @@ plt.rc("lines", lw=2)
 rgba_to_hex = lambda rgba : '#'+''.join([f'{int(v*255):02x}' for v in rgba])
 color = rgba_to_hex(cm.viridis(.25))
 
-SAVE = False
+SAVE = True
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)
@@ -142,11 +142,11 @@ def make_anim(folder, filename):
     ax[1].set_xlim(-prange, prange)
     ax[1].set_ylim(-prange, prange)
 
-    # Squirecle solution
-    d = 0.12
-    At = (1 + d * np.sin(2*t+np.pi/4)**2) /np.sqrt(2)
-    AT = np.cos(x/(2*r))
-    ax[1].plot(At*np.cos(t), At*np.sin(t), 'k--') 
+    # # Squirecle solution
+    # d = 0.12
+    # At = (1 + d * np.sin(2*t+np.pi/4)**2) /np.sqrt(2)
+    # AT = np.cos(x/(2*r))
+    # ax[1].plot(At*np.cos(t), At*np.sin(t), 'k--') 
 
     add_phase(ax[2], phibar1, phibar2, a/u)
 
@@ -182,7 +182,8 @@ def make_anim(folder, filename):
         # plt.savefig("test" + str(m) + ".pdf")
 
     anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
-    plot_vid(anim, folder_vid+filename+".mp4", fps=30)
+    plot_vid(anim, folder_vid+filename+".mp4", fps=30) 
+    # plt.show()
 
 name = '5'
 folder = "article_revised/data/" + name + "/"
