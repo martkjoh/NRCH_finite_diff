@@ -51,7 +51,7 @@ def make_anim(folder, filenames):
     prange = 1.2
     frames = len(phits[0])
 
-    n = 1
+    n = 10
     for i, axi in enumerate(ax):
         axa, axb = axi
 
