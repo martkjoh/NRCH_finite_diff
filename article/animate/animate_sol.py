@@ -12,6 +12,11 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
+SAVE = True
+ 
+def plot_vid(anim, path, **kwargs):
+    if SAVE: anim.save(path, **kwargs)
+    else: plt.show()
 
 def plot_error(ax, phit, param):
     u, a, b, phibar1, phibar2, N, L, T, dt = param
@@ -43,11 +48,12 @@ def plot_sol2(ax, param):
     u, a, b, phibar1, phibar2, N, L, T, dt = param
     tt = np.linspace(0, L, 1000)
     ax.plot(tt, (1 + phibar1)*np.cos(2*tt/L*2*np.pi) + phibar1,":r",label="$A\\cos2\\phi + c$")
-    ax.plot(tt, 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\phi$")
+    ax.plot(tt, 2*np.sqrt(-phibar1-phibar1**2)*np.cos(tt/L*2*np.pi),":k",label="$B\\cos^2\\phi$")
 
 
 def make_anim(folder, filename):
     filename = filename[:-4]
+    print(filename)
 
     phit, param = load_file(folder, filename)
     u, a, b, phibar1, phibar2, N, L, T, dt = param
@@ -90,7 +96,7 @@ def make_anim(folder, filename):
     l3, = ax[2].plot([], [], 'r-', label='$\\varphi_1$')
     l4, = ax[2].plot([], [], 'k-', label='$\\varphi_2$')
     ax[2].set_xlim(0, L) 
-    ax[2].set_ylim(-0.02, 0.02)
+    # ax[2].set_ylim(-0.02, 0.02)
     l6 = ax[2].text(L/10, 0.05, 'average error:\nmax error:')
 
     tt = np.linspace(0, L, N)
@@ -108,8 +114,9 @@ def make_anim(folder, filename):
 
 
     frames = len(phit)
+    print(frames)
 
-    n = 100
+    n = 1
     def animate(m):
         m = m*n
         n2 = frames//10
@@ -131,14 +138,14 @@ def make_anim(folder, filename):
 
         m1.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
-        n3 = frames//100
+        n3 = frames//1
+
         if m//n3 - (m-n)//n3 == 1:
             txt = str((m+1)//n3) + "%"
             print(current_process().name, '\t', txt)
 
-    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False,   interval=1, frames=frames//n, repeat=False)
-    plt.show()
-    # anim.save(folder_vid+filename+".mp4", fps=30)
+    anim = animation.FuncAnimation(fig, animate, cache_frame_data=False, interval=1, frames=frames//n, repeat=False)
+    plot_vid(anim, folder_vid+filename+".mp4", fps=30)
 
 name = "sol"
 folder = "article/data/" + name + "/"
@@ -151,7 +158,7 @@ if os.path.isdir(folder_vid):
 os.mkdir(folder_vid)
 
 fnames = get_all_filenames_in_folder(folder)
-
+print(fnames)
 
 import time
 startTime = time.time()

@@ -5,3 +5,4 @@ blender/
 *.pdf
 *.svg
 Manifest.toml
+.vscode

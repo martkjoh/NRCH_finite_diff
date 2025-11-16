@@ -12,7 +12,7 @@ plt.rc("font", family="serif", size=16)
 plt.rc("mathtext", fontset="cm")
 plt.rc("lines", lw=2)
 
-SAVE = True
+SAVE = False
 
 def plot_vid(anim, path, **kwargs):
     if SAVE: anim.save(path, **kwargs)
@@ -50,6 +50,7 @@ def make_anim(folder, filenames):
     t = np.linspace(0, 2*pi)
     prange = 1.2
     frames = len(phits[0])
+    frames = 500
 
     n = 1
     for i, axi in enumerate(ax):
@@ -88,12 +89,7 @@ def make_anim(folder, filenames):
             l2.set_data(x, p[:, 1])
             m.set_data([*p[:, 1], p[0, 1]], [*p[:, 0], p[0, 0]])
 
-        n3 = frames//100
-        if k//n3 - (k-n)//n3 == 1:
-            txt = str((k+1)//n3) + "%"
-
-
-    anim = animation.FuncAnimation(fig, animate, interval=1, frames=frames//n)
+    anim = animation.FuncAnimation(fig, animate, interval=100, frames=frames//n)
     plot_vid(anim, folder_vid+filename+".mp4", fps=30)
 
 name = "2"

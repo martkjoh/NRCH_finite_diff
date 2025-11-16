@@ -11,13 +11,15 @@ write_folder = "article/data/2/"
 include("../../numerics.jl")
 
 u = 10.
-D = 1e-5
-bφ = -.2
+D = 2e-4
+bφ = -.1
 α = 1.
 param = (u, α, D, bφ, 0., 0)
 
 inits = [0, 0, 0, 1]
 name_apps = ["1", "2", "3", "4"]
+
+
 n, = axes(inits)
 
 @time @threads for i in n

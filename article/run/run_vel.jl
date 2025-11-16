@@ -15,7 +15,7 @@ D = 0e-5
 SS = [50, 75, 100, 125, 150, 200, 250, 300,]
 
 @threads for SIZE in SS
-    write_folder = "article_revised/data/vel/$(SIZE)/"
+    write_folder = "article/data/vel/$(SIZE)/"
     rm(write_folder, recursive=true, force=true)
 
     for α in LinRange(0., 2., 20)
